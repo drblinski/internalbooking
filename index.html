@@ -75,55 +75,23 @@
       text-align: center;
     }
     
-    .filters-container {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .filter-dropdown {
-      background: #fff;
-      border: 2px solid #e5e5e7;
+    .api-info {
+      background: #e3f2fd;
+      border: 1px solid #90caf9;
       border-radius: 8px;
-      padding: 10px 16px;
-      cursor: pointer;
-      min-width: 160px;
-      font-weight: 500;
-      position: relative;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #1565c0;
     }
     
-    .filter-dropdown:hover {
-      border-color: #007AFF;
+    .api-info h4 {
+      margin-bottom: 8px;
+      color: #0d47a1;
     }
     
-    .dropdown-content {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #fff;
-      border: 2px solid #e5e5e7;
-      border-radius: 8px;
-      margin-top: 4px;
-      max-height: 300px;
-      overflow-y: auto;
-      z-index: 1000;
-      display: none;
-    }
-    
-    .dropdown-item {
-      padding: 12px 16px;
-      cursor: pointer;
-      border-bottom: 1px solid #f5f5f5;
-    }
-    
-    .dropdown-item:hover {
-      background: #f8f9fa;
-    }
-    
-    .refresh-button, .test-button {
-      background: #007AFF;
+    .test-button {
+      background: #34c759;
       color: white;
       border: none;
       border-radius: 6px;
@@ -133,40 +101,9 @@
       margin-left: 8px;
     }
     
-    .test-button {
-      background: #34c759;
-    }
-    
-    .refresh-button:hover {
-      background: #0056d6;
-    }
-    
     .test-button:hover {
       background: #30a752;
     }
-    
-    .legend {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 16px;
-      font-size: 14px;
-    }
-    
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-    
-    .status-dot.available { background: #51cf66; }
-    .status-dot.busy { background: #ff6b6b; }
-    .status-dot.no-service { background: #868e96; }
     
     .dashboard-content {
       background: #fff;
@@ -185,13 +122,10 @@
     .location-panel {
       background: #fff;
       padding: 24px;
-      min-height: 600px;
+      min-height: 400px;
     }
     
     .location-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 20px;
       padding-bottom: 16px;
       border-bottom: 2px solid #f5f5f5;
@@ -201,101 +135,155 @@
       font-size: 20px;
       font-weight: 700;
       color: #1a1a1a;
+      margin-bottom: 4px;
     }
     
-    .location-stats {
-      display: flex;
-      gap: 16px;
+    .location-address {
       font-size: 14px;
       color: #666;
     }
     
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-    
-    .location-address {
+    .location-timezone {
       font-size: 12px;
       color: #888;
-      margin-bottom: 16px;
+      margin-top: 4px;
     }
     
-    .service-section {
-      margin-bottom: 20px;
+    .services-list {
+      margin-top: 16px;
+    }
+    
+    .service-item {
       border: 1px solid #f0f0f0;
       border-radius: 8px;
-      padding: 16px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    
+    .service-item:hover {
+      border-color: #007AFF;
+      box-shadow: 0 2px 8px rgba(0,123,255,0.1);
     }
     
     .service-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
+      padding: 16px;
       cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafafa;
+      transition: background 0.2s;
     }
     
     .service-header:hover {
-      background: #f8f9fa;
-      padding: 8px;
-      border-radius: 6px;
-      margin: -8px -8px 12px -8px;
+      background: #f0f0f0;
+    }
+    
+    .service-header.expanded {
+      background: #e8f4f8;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .service-info {
+      flex: 1;
     }
     
     .service-name {
       font-size: 16px;
       font-weight: 600;
       color: #1a1a1a;
-      flex: 1;
-    }
-    
-    .service-staff-count {
-      font-size: 12px;
-      color: #666;
-      background: #f0f0f0;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-    
-    .staff-variants {
-      margin-top: 12px;
-      padding: 12px;
-      background: #f8f9fa;
-      border-radius: 6px;
-      display: none;
-    }
-    
-    .staff-variants.expanded {
-      display: block;
-    }
-    
-    .staff-variant {
-      padding: 8px 0;
-      border-bottom: 1px solid #e0e0e0;
-    }
-    
-    .staff-variant:last-child {
-      border-bottom: none;
-    }
-    
-    .staff-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 4px;
     }
     
-    .staff-name {
+    .service-description {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    
+    .service-price {
+      font-size: 14px;
+      color: #007AFF;
       font-weight: 500;
+    }
+    
+    .expand-indicator {
+      font-size: 12px;
+      color: #666;
+      transition: transform 0.2s;
+    }
+    
+    .expand-indicator.expanded {
+      transform: rotate(180deg);
+    }
+    
+    .service-details {
+      display: none;
+      padding: 0;
+      background: #fff;
+    }
+    
+    .service-details.expanded {
+      display: block;
+    }
+    
+    .staff-loading {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-style: italic;
+    }
+    
+    .staff-list {
+      padding: 16px;
+    }
+    
+    .staff-item {
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    
+    .staff-item:hover {
+      border-color: #007AFF;
+      box-shadow: 0 2px 4px rgba(0,123,255,0.1);
+    }
+    
+    .staff-header {
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+    }
+    
+    .staff-header:hover {
+      background: #e9ecef;
+    }
+    
+    .staff-header.expanded {
+      background: #fff3cd;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .staff-info {
+      flex: 1;
+    }
+    
+    .staff-name {
+      font-size: 14px;
+      font-weight: 600;
       color: #1a1a1a;
+      margin-bottom: 2px;
+    }
+    
+    .staff-details {
+      font-size: 12px;
+      color: #666;
     }
     
     .staff-price {
@@ -304,35 +292,65 @@
       font-weight: 500;
     }
     
-    .availability-info {
-      font-size: 12px;
-      color: #666;
-      font-style: italic;
+    .times-section {
+      display: none;
+      padding: 12px;
+      background: #fff;
+      border-top: 1px solid #e0e0e0;
     }
     
-    .availability-times {
+    .times-section.expanded {
+      display: block;
+    }
+    
+    .times-loading {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 12px;
+    }
+    
+    .times-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 6px;
       margin-top: 8px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
     }
     
     .time-slot {
       background: #e8f5e8;
       color: #2d5a2d;
-      padding: 2px 6px;
+      padding: 6px 8px;
       border-radius: 4px;
       font-size: 11px;
       font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid #c8e6c9;
+    }
+    
+    .time-slot:hover {
+      background: #c8e6c9;
+      transform: translateY(-1px);
+    }
+    
+    .no-times {
+      text-align: center;
+      color: #999;
+      font-style: italic;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 4px;
     }
     
     .loading-state {
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 400px;
+      height: 300px;
       color: #666;
-      font-size: 18px;
+      font-size: 16px;
     }
     
     .error-state {
@@ -340,7 +358,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 400px;
+      height: 300px;
       color: #d32f2f;
       text-align: center;
       padding: 20px;
@@ -348,7 +366,7 @@
     
     .error-state h3 {
       margin-bottom: 12px;
-      font-size: 20px;
+      font-size: 18px;
     }
     
     .error-state p {
@@ -367,40 +385,20 @@
       font-weight: 500;
     }
     
-    .no-data-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 400px;
-      color: #666;
-      text-align: center;
-      padding: 20px;
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #007AFF;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
     }
     
-    .no-data-state h3 {
-      margin-bottom: 12px;
-      font-size: 20px;
-      color: #1a1a1a;
-    }
-    
-    .no-data-state p {
-      margin-bottom: 8px;
-    }
-    
-    .api-limitation-notice {
-      background: #fff3cd;
-      border: 1px solid #ffeaa7;
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      color: #856404;
-    }
-    
-    .api-limitation-notice h4 {
-      margin-bottom: 8px;
-      color: #856404;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     
     /* Mobile Responsiveness */
@@ -419,22 +417,21 @@
         justify-content: center;
       }
       
-      .filters-container {
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      
       .locations-grid {
         grid-template-columns: 1fr;
+      }
+      
+      .times-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
       }
     }
   </style>
 </head>
 <body>
   <div class="dashboard-container">
-    <div class="api-limitation-notice">
-      <h4>📋 Client API Dashboard</h4>
-      <p>This dashboard uses the Boulevard Client API, which is designed for booking flows. It shows available services and staff for booking, but cannot display existing appointments or administrative scheduling data. All availability shown is real-time booking availability.</p>
+    <div class="api-info">
+      <h4>🚀 Fast Loading Dashboard</h4>
+      <p>This dashboard uses smart lazy-loading: locations and services load immediately, but staff and availability data only loads when you click to expand. This prevents rate limits and ensures blazing fast performance.</p>
     </div>
     
     <div class="dashboard-header">
@@ -445,47 +442,7 @@
           <button class="nav-button" id="prevDay">← Previous</button>
           <div class="current-date" id="currentDate">Today</div>
           <button class="nav-button" id="nextDay">Next →</button>
-        </div>
-      </div>
-      
-      <div class="filters-container">
-        <div class="filter-dropdown" id="locationFilter">
-          All Locations ▼
-          <div class="dropdown-content" id="locationDropdown">
-            <div class="dropdown-item" data-location="all">All Locations</div>
-          </div>
-        </div>
-        
-        <div class="filter-dropdown" id="serviceFilter">
-          All Services ▼
-          <div class="dropdown-content" id="serviceDropdown">
-            <div class="dropdown-item" data-service="all">All Services</div>
-          </div>
-        </div>
-        
-        <div class="filter-dropdown" id="staffFilter">
-          All Staff ▼
-          <div class="dropdown-content" id="staffDropdown">
-            <div class="dropdown-item" data-staff="all">All Staff</div>
-          </div>
-        </div>
-        
-        <button class="refresh-button" id="refreshData">Refresh</button>
-        <button class="test-button" id="testAPI">Test API</button>
-      </div>
-      
-      <div class="legend">
-        <div class="legend-item">
-          <div class="legend-dot status-dot available"></div>
-          <span>Available Times</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot status-dot busy"></div>
-          <span>Limited Availability</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot status-dot no-service"></div>
-          <span>No Service Available</span>
+          <button class="test-button" id="testAPI">Test API</button>
         </div>
       </div>
     </div>
@@ -493,7 +450,7 @@
     <div class="dashboard-content">
       <div id="dashboard-container" class="locations-grid">
         <div class="loading-state">
-          Loading service availability from Boulevard Client API...
+          Loading business locations and services...
         </div>
       </div>
     </div>
@@ -504,7 +461,6 @@
     // BOULEVARD CLIENT API CONFIGURATION
     // =============================================================================
 
-    // Configuration - Updated with your actual values
     const BOULEVARD_CONFIG = {
       businessId: 'f6a06736-1132-4365-b79a-a69c648a746a',
       apiKey: '93ca3f15-6f0e-491d-840b-681a0fef80ed',
@@ -513,19 +469,24 @@
 
     // Global State
     let currentDate = new Date();
-    let selectedLocation = 'all';
-    let selectedService = 'all';
-    let selectedStaff = 'all';
-    let dashboardData = null;
-    let activeCarts = new Map(); // Track carts created for each location
+    let dashboardData = {};
+    let locationCarts = new Map(); // Cache carts per location to avoid recreation
+
+    // Rate limiting: Simple queue to prevent parallel API calls
+    let apiCallQueue = [];
+    let isProcessingQueue = false;
 
     // =============================================================================
-    // BOULEVARD CLIENT API HELPER FUNCTION
+    // BOULEVARD CLIENT API HELPER WITH RATE LIMITING
     // =============================================================================
 
+    /**
+     * Makes a Boulevard Client API request with proper authentication
+     * All API calls go through this function for consistent error handling
+     */
     function makeBoulevardRequest(query, variables = {}) {
       console.log('🔥 Making Boulevard Client API request...');
-      console.log('Query:', query.substring(0, 200) + '...');
+      console.log('Query:', query.substring(0, 100) + '...');
       console.log('Variables:', variables);
       
       return fetch(BOULEVARD_CONFIG.endpoint, {
@@ -551,12 +512,45 @@
           console.error('GraphQL errors:', data.errors);
           throw new Error(data.errors[0].message);
         }
+        console.log('✅ API request successful');
         return data.data;
       });
     }
 
+    /**
+     * Queue API calls to prevent hitting rate limits
+     * Only one API call processes at a time
+     */
+    async function queueApiCall(apiFunction) {
+      return new Promise((resolve, reject) => {
+        apiCallQueue.push({ apiFunction, resolve, reject });
+        processQueue();
+      });
+    }
+
+    async function processQueue() {
+      if (isProcessingQueue || apiCallQueue.length === 0) return;
+      
+      isProcessingQueue = true;
+      
+      while (apiCallQueue.length > 0) {
+        const { apiFunction, resolve, reject } = apiCallQueue.shift();
+        
+        try {
+          const result = await apiFunction();
+          resolve(result);
+          // Small delay between API calls to be extra safe with rate limits
+          await new Promise(r => setTimeout(r, 100));
+        } catch (error) {
+          reject(error);
+        }
+      }
+      
+      isProcessingQueue = false;
+    }
+
     // =============================================================================
-    // 1. FETCH BUSINESS LOCATIONS (CLIENT API)
+    // API CALL #1: FETCH BUSINESS LOCATIONS (ON PAGE LOAD)
     // =============================================================================
 
     const BUSINESS_LOCATIONS_QUERY = `
@@ -582,34 +576,27 @@
       }
     `;
 
+    /**
+     * INITIAL LOAD: Fetch all business locations
+     * This runs immediately on page load - no user interaction required
+     */
     async function fetchBusinessLocations() {
-      console.log('🏢 Fetching business locations...');
+      console.log('🏢 INITIAL LOAD: Fetching business locations...');
       
-      try {
-        const data = await makeBoulevardRequest(BUSINESS_LOCATIONS_QUERY);
-        
-        if (!data.business || !data.business.locations || !data.business.locations.edges) {
-          console.log('⚠️ No locations data returned');
-          return [];
-        }
-        
-        const locations = data.business.locations.edges.map(edge => edge.node);
-        
-        console.log(`✅ Found ${locations.length} business locations`);
-        locations.forEach(l => {
-          console.log(`  - ${l.name} - ID: ${l.id}`);
-        });
-        
-        return locations;
-        
-      } catch (error) {
-        console.error('❌ Failed to fetch business locations:', error);
-        return [];
+      const data = await makeBoulevardRequest(BUSINESS_LOCATIONS_QUERY);
+      
+      if (!data.business?.locations?.edges) {
+        throw new Error('No locations found in response');
       }
+      
+      const locations = data.business.locations.edges.map(edge => edge.node);
+      console.log(`✅ Found ${locations.length} business locations`);
+      
+      return locations;
     }
 
     // =============================================================================
-    // 2. CREATE CART FOR LOCATION TO DISCOVER SERVICES (CLIENT API)
+    // API CALL #2: CREATE CART AND FETCH SERVICES (ON PAGE LOAD, PER LOCATION)
     // =============================================================================
 
     const CREATE_CART_QUERY = `
@@ -634,33 +621,45 @@
       }
     `;
 
-    async function createCartForLocation(locationId) {
-      console.log(`🛒 Creating cart for location ${locationId}...`);
+    /**
+     * INITIAL LOAD: Create cart for location and fetch available services
+     * This runs for each location on page load - no user interaction required
+     */
+    async function createCartAndFetchServices(locationId) {
+      console.log(`🛒 INITIAL LOAD: Creating cart for location ${locationId}...`);
       
-      try {
-        const data = await makeBoulevardRequest(CREATE_CART_QUERY, { locationId });
-        
-        if (!data.createCart || !data.createCart.cart) {
-          console.log(`⚠️ Failed to create cart for location ${locationId}`);
-          return null;
-        }
-        
-        const cart = data.createCart.cart;
-        console.log(`✅ Created cart ${cart.id} for location`);
-        
-        // Store cart for later use
-        activeCarts.set(locationId, cart.id);
-        
-        return cart;
-        
-      } catch (error) {
-        console.error(`❌ Failed to create cart for location ${locationId}:`, error);
-        return null;
+      const data = await makeBoulevardRequest(CREATE_CART_QUERY, { locationId });
+      
+      if (!data.createCart?.cart) {
+        throw new Error(`Failed to create cart for location ${locationId}`);
       }
+      
+      const cart = data.createCart.cart;
+      
+      // Cache the cart ID for this location
+      locationCarts.set(locationId, cart.id);
+      
+      // Extract services from categories
+      const services = [];
+      if (cart.availableCategories) {
+        cart.availableCategories.forEach(category => {
+          if (category.availableItems) {
+            category.availableItems.forEach(item => {
+              services.push({
+                ...item,
+                categoryName: category.name
+              });
+            });
+          }
+        });
+      }
+      
+      console.log(`✅ Created cart ${cart.id}, found ${services.length} services`);
+      return { cartId: cart.id, services };
     }
 
     // =============================================================================
-    // 3. GET STAFF VARIANTS FOR A SERVICE (CLIENT API)
+    // API CALL #3: FETCH STAFF VARIANTS (ON SERVICE CLICK - USER INTERACTION)
     // =============================================================================
 
     const GET_STAFF_VARIANTS_QUERY = `
@@ -670,10 +669,7 @@
           availableItem(id: $itemId) {
             id
             name
-            description
             ... on CartAvailableBookableItem {
-              listPrice
-              listDuration
               staffVariants {
                 id
                 price
@@ -691,80 +687,73 @@
       }
     `;
 
-    async function getStaffVariantsForService(cartId, itemId) {
-      console.log(`👥 Getting staff variants for service ${itemId} in cart ${cartId}...`);
+    /**
+     * USER INTERACTION: Fetch staff variants when user clicks on a service
+     * This is the first "expensive" API call that only runs on demand
+     */
+    async function fetchStaffVariants(cartId, serviceId) {
+      console.log(`👥 USER CLICK: Fetching staff variants for service ${serviceId}...`);
       
-      try {
-        const data = await makeBoulevardRequest(GET_STAFF_VARIANTS_QUERY, { cartId, itemId });
+      return queueApiCall(async () => {
+        const data = await makeBoulevardRequest(GET_STAFF_VARIANTS_QUERY, { 
+          cartId, 
+          itemId: serviceId 
+        });
         
-        if (!data.cart || !data.cart.availableItem) {
-          console.log(`⚠️ No staff variants found for service ${itemId}`);
+        if (!data.cart?.availableItem?.staffVariants) {
           return [];
         }
         
-        const item = data.cart.availableItem;
-        const staffVariants = item.staffVariants || [];
+        const staffVariants = data.cart.availableItem.staffVariants;
+        console.log(`✅ Found ${staffVariants.length} staff variants`);
         
-        console.log(`✅ Found ${staffVariants.length} staff variants for ${item.name}`);
-        staffVariants.forEach(variant => {
-          const staffName = variant.staff ? `${variant.staff.firstName} ${variant.staff.lastName}` : 'Unknown Staff';
-          console.log(`  - ${staffName}: $${variant.price} (${variant.duration}min)`);
-        });
-        
-        return staffVariants.map(variant => ({
-          ...variant,
-          serviceName: item.name,
-          serviceId: item.id
-        }));
-        
-      } catch (error) {
-        console.error(`❌ Failed to get staff variants for service ${itemId}:`, error);
-        return [];
-      }
+        return staffVariants;
+      });
     }
 
     // =============================================================================
-    // 4. GET AVAILABLE DATES FOR CART (CLIENT API)
+    // API CALL #4: ADD SERVICE TO CART (ON STAFF CLICK - USER INTERACTION)
     // =============================================================================
 
-    const GET_AVAILABLE_DATES_QUERY = `
-      query GetAvailableDates($cartId: ID!, $searchRangeLower: String!, $searchRangeUpper: String!, $tz: String!) {
-        cartBookableDates(
+    const ADD_SERVICE_TO_CART_QUERY = `
+      mutation AddServiceToCart($cartId: ID!, $itemId: ID!, $staffVariantId: ID!) {
+        addCartSelectedBookableItem(input: {
           id: $cartId,
-          searchRangeLower: $searchRangeLower,
-          searchRangeUpper: $searchRangeUpper,
-          tz: $tz
-        ) {
-          date
+          itemId: $itemId,
+          itemStaffVariantId: $staffVariantId
+        }) {
+          cart { 
+            id 
+          }
         }
       }
     `;
 
-    async function getAvailableDatesForCart(cartId, startDate, endDate, timezone = 'America/New_York') {
-      console.log(`📅 Getting available dates for cart ${cartId}...`);
+    /**
+     * USER INTERACTION: Add service/staff to cart when user clicks on staff member
+     * Required before we can fetch available times
+     */
+    async function addServiceToCart(cartId, serviceId, staffVariantId) {
+      console.log(`➕ USER CLICK: Adding service ${serviceId} with staff ${staffVariantId} to cart...`);
       
-      try {
-        const data = await makeBoulevardRequest(GET_AVAILABLE_DATES_QUERY, {
+      return queueApiCall(async () => {
+        const data = await makeBoulevardRequest(ADD_SERVICE_TO_CART_QUERY, {
           cartId,
-          searchRangeLower: startDate,
-          searchRangeUpper: endDate,
-          tz: timezone
+          itemId: serviceId,
+          itemStaffVariantId: staffVariantId
         });
         
-        const availableDates = data.cartBookableDates || [];
+        if (!data.addCartSelectedBookableItem?.cart) {
+          throw new Error('Failed to add service to cart');
+        }
         
-        console.log(`✅ Found ${availableDates.length} available dates`);
-        
-        return availableDates;
-        
-      } catch (error) {
-        console.error(`❌ Failed to get available dates for cart ${cartId}:`, error);
-        return [];
-      }
+        console.log(`✅ Added service to cart successfully`);
+        return true;
+      });
     }
 
     // =============================================================================
-    // 5. GET AVAILABLE TIMES FOR A SPECIFIC DATE (CLIENT API)
+    // API CALL #5: FETCH AVAILABLE TIMES (ON STAFF CLICK - USER INTERACTION)
     // =============================================================================
 
     const GET_AVAILABLE_TIMES_QUERY = `
@@ -781,10 +770,14 @@
       }
     `;
 
-    async function getAvailableTimesForDate(cartId, date, timezone = 'America/New_York') {
-      console.log(`⏰ Getting available times for cart ${cartId} on ${date}...`);
+    /**
+     * USER INTERACTION: Fetch available times after adding service to cart
+     * This is the most "expensive" call and only runs when user clicks staff
+     */
+    async function fetchAvailableTimes(cartId, date, timezone) {
+      console.log(`⏰ USER CLICK: Fetching available times for ${date}...`);
       
-      try {
+      return queueApiCall(async () => {
         const data = await makeBoulevardRequest(GET_AVAILABLE_TIMES_QUERY, {
           cartId,
           searchDate: date,
@@ -792,303 +785,93 @@
         });
         
         const availableTimes = data.cartBookableTimes || [];
-        
-        console.log(`✅ Found ${availableTimes.length} available times for ${date}`);
+        console.log(`✅ Found ${availableTimes.length} available times`);
         
         return availableTimes;
-        
-      } catch (error) {
-        console.error(`❌ Failed to get available times for cart ${cartId} on ${date}:`, error);
-        return [];
-      }
+      });
     }
 
     // =============================================================================
-    // 6. ADD SERVICE TO CART (REQUIRED FOR AVAILABILITY CHECKING)
+    // INITIAL DASHBOARD LOADING (PAGE LOAD ONLY)
     // =============================================================================
 
-    const ADD_SERVICE_TO_CART_QUERY = `
-      mutation AddServiceToCart($cartId: ID!, $itemId: ID!, $staffVariantId: ID!) {
-        addCartSelectedBookableItem(input: {
-          id: $cartId,
-          itemId: $itemId,
-          itemStaffVariantId: $staffVariantId
-        }) {
-          cart { 
-            id 
-            selectedItems {
-              id
-              item {
-                id
-                name
-              }
-            }
-          }
-        }
-      }
-    `;
-
-    async function addServiceToCart(cartId, itemId, staffVariantId) {
-      console.log(`➕ Adding service ${itemId} (staff variant ${staffVariantId}) to cart ${cartId}...`);
-      
-      try {
-        const data = await makeBoulevardRequest(ADD_SERVICE_TO_CART_QUERY, {
-          cartId,
-          itemId,
-          staffVariantId
-        });
-        
-        if (!data.addCartSelectedBookableItem || !data.addCartSelectedBookableItem.cart) {
-          console.log(`⚠️ Failed to add service to cart`);
-          return false;
-        }
-        
-        console.log(`✅ Added service to cart successfully`);
-        return true;
-        
-      } catch (error) {
-        console.error(`❌ Failed to add service to cart:`, error);
-        return false;
-      }
-    }
-
-    // =============================================================================
-    // 7. COMPREHENSIVE DATA LOADING FOR DASHBOARD
-    // =============================================================================
-
-    async function loadDashboardData(selectedDate) {
-      console.log(`🔄 Loading dashboard data for ${selectedDate.toISOString().split('T')[0]}...`);
+    /**
+     * Load initial dashboard data: locations and services only
+     * Staff and times are NOT loaded here - they load on user interaction
+     */
+    async function loadInitialDashboardData() {
+      console.log('🚀 INITIAL LOAD: Loading dashboard data...');
       
       try {
         // Step 1: Get all business locations
         const locations = await fetchBusinessLocations();
         
-        if (locations.length === 0) {
-          return { error: 'No business locations found' };
-        }
-        
-        // Filter locations if needed
-        const locationsToProcess = selectedLocation === 'all' ? 
-          locations : 
-          locations.filter(loc => loc.name === selectedLocation);
-        
-        // Step 2: For each location, create cart and discover services/staff
+        // Step 2: For each location, create cart and get services
         const locationData = await Promise.all(
-          locationsToProcess.map(async location => {
-            console.log(`🏢 Processing location: ${location.name}...`);
-            
-            // Create cart for this location
-            const cart = await createCartForLocation(location.id);
-            
-            if (!cart) {
+          locations.map(async location => {
+            try {
+              const { cartId, services } = await createCartAndFetchServices(location.id);
+              
               return {
                 location,
+                cartId,
+                services,
+                error: null
+              };
+            } catch (error) {
+              console.error(`Failed to load services for ${location.name}:`, error);
+              return {
+                location,
+                cartId: null,
                 services: [],
-                error: 'Failed to create cart for location'
+                error: error.message
               };
             }
-            
-            // Get all available services from cart
-            const services = [];
-            const allStaffVariants = [];
-            
-            if (cart.availableCategories) {
-              for (const category of cart.availableCategories) {
-                for (const item of category.availableItems) {
-                  // Get staff variants for this service
-                  const staffVariants = await getStaffVariantsForService(cart.id, item.id);
-                  
-                  if (staffVariants.length > 0) {
-                    // For each staff variant, get availability for the selected date
-                    const staffWithAvailability = await Promise.all(
-                      staffVariants.map(async variant => {
-                        // Add this service/staff to cart to check availability
-                        const added = await addServiceToCart(cart.id, item.id, variant.id);
-                        
-                        if (added) {
-                          // Get available times for selected date
-                          const dateStr = selectedDate.toISOString().split('T')[0];
-                          const availableTimes = await getAvailableTimesForDate(cart.id, dateStr, location.tz);
-                          
-                          return {
-                            ...variant,
-                            availableTimes,
-                            hasAvailability: availableTimes.length > 0
-                          };
-                        }
-                        
-                        return {
-                          ...variant,
-                          availableTimes: [],
-                          hasAvailability: false
-                        };
-                      })
-                    );
-                    
-                    services.push({
-                      id: item.id,
-                      name: item.name,
-                      description: item.description,
-                      category: category.name,
-                      staffVariants: staffWithAvailability
-                    });
-                    
-                    allStaffVariants.push(...staffWithAvailability);
-                  }
-                }
-              }
-            }
-            
-            console.log(`✅ ${location.name}: ${services.length} services, ${allStaffVariants.length} total staff variants`);
-            
-            return {
-              location,
-              services,
-              cart,
-              allStaffVariants
-            };
           })
         );
         
-        // Step 3: Aggregate all services and staff for filters
-        const allServices = [];
-        const allStaff = new Map();
-        
-        locationData.forEach(locData => {
-          if (locData.services) {
-            locData.services.forEach(service => {
-              // Add to all services if not already present
-              if (!allServices.find(s => s.name === service.name)) {
-                allServices.push(service);
-              }
-              
-              // Add staff to global staff map
-              service.staffVariants.forEach(variant => {
-                if (variant.staff) {
-                  const staffKey = variant.staff.id;
-                  if (!allStaff.has(staffKey)) {
-                    allStaff.set(staffKey, {
-                      ...variant.staff,
-                      services: [service.name],
-                      locations: [locData.location.name]
-                    });
-                  } else {
-                    const existingStaff = allStaff.get(staffKey);
-                    if (!existingStaff.services.includes(service.name)) {
-                      existingStaff.services.push(service.name);
-                    }
-                    if (!existingStaff.locations.includes(locData.location.name)) {
-                      existingStaff.locations.push(locData.location.name);
-                    }
-                  }
-                }
-              });
-            });
-          }
-        });
-        
-        console.log('✅ Dashboard data loaded successfully');
-        
-        return {
-          locations,
-          allServices,
-          allStaff: Array.from(allStaff.values()),
-          locationData
-        };
+        console.log('✅ Initial dashboard data loaded successfully');
+        return { locationData };
         
       } catch (error) {
-        console.error('❌ Failed to load dashboard data:', error);
-        return { error: error.message };
-      }
-    }
-
-    // =============================================================================
-    // 8. TEST FUNCTION FOR CLIENT API
-    // =============================================================================
-
-    async function testClientAPI() {
-      console.log('🧪 Testing Boulevard Client API endpoints...');
-      
-      try {
-        // Test 1: Business locations
-        console.log('Test 1: Fetching business locations...');
-        const locations = await fetchBusinessLocations();
-        console.log(`✅ Locations test: ${locations.length} found`);
-        
-        if (locations.length > 0) {
-          const firstLocation = locations[0];
-          console.log(`First location: ${firstLocation.name} (${firstLocation.id})`);
-          
-          // Test 2: Create cart for first location
-          console.log('Test 2: Creating cart for first location...');
-          const cart = await createCartForLocation(firstLocation.id);
-          
-          if (cart) {
-            console.log(`✅ Cart created: ${cart.id}`);
-            console.log(`Available categories: ${cart.availableCategories?.length || 0}`);
-            
-            // Test 3: Get staff variants for first service
-            if (cart.availableCategories && cart.availableCategories.length > 0) {
-              const firstCategory = cart.availableCategories[0];
-              if (firstCategory.availableItems && firstCategory.availableItems.length > 0) {
-                const firstItem = firstCategory.availableItems[0];
-                console.log('Test 3: Getting staff variants for first service...');
-                const staffVariants = await getStaffVariantsForService(cart.id, firstItem.id);
-                console.log(`✅ Staff variants test: ${staffVariants.length} found`);
-              }
-            }
-          }
-        }
-        
-        console.log('🎉 All Client API tests completed successfully!');
-        
-      } catch (error) {
-        console.error('💥 Client API test failed:', error);
+        console.error('❌ Failed to load initial dashboard data:', error);
         throw error;
       }
     }
 
     // =============================================================================
-    // 9. RENDER DASHBOARD WITH CLIENT API DATA
+    // UI RENDERING FUNCTIONS
     // =============================================================================
 
+    /**
+     * Render the complete dashboard with locations and services
+     * Staff and times will be loaded dynamically on user interaction
+     */
     function renderDashboard(data) {
       const container = document.getElementById('dashboard-container');
       
-      if (data.error) {
-        container.innerHTML = `
-          <div class="error-state">
-            <h3>Error Loading Data</h3>
-            <p>${data.error}</p>
-            <p>Please check your Boulevard configuration and API key.</p>
-            <button onclick="loadAndRenderDashboard()">Retry</button>
-          </div>
-        `;
-        return;
-      }
-      
       if (!data.locationData || data.locationData.length === 0) {
         container.innerHTML = `
-          <div class="no-data-state">
+          <div class="error-state">
             <h3>No Data Found</h3>
-            <p>No locations or services found in your Boulevard business.</p>
-            <p>Please check your business setup and try again.</p>
+            <p>No locations found in your Boulevard business.</p>
             <button onclick="loadAndRenderDashboard()">Retry</button>
           </div>
         `;
         return;
       }
       
-      // Clear container
       container.innerHTML = '';
       
-      // Render each location
       data.locationData.forEach(locationInfo => {
         const locationPanel = createLocationPanel(locationInfo);
         container.appendChild(locationPanel);
       });
     }
 
+    /**
+     * Create a location panel with services (but no staff/times yet)
+     */
     function createLocationPanel(locationInfo) {
       const panel = document.createElement('div');
       panel.className = 'location-panel';
@@ -1099,25 +882,16 @@
       
       const addressStr = locationInfo.location.address ? 
         `${locationInfo.location.address.city}, ${locationInfo.location.address.state}` : 
-        'No address';
+        'No address available';
       
       header.innerHTML = `
-        <div>
-          <div class="location-name">${locationInfo.location.name}</div>
-          <div class="location-address">${addressStr}</div>
-        </div>
-        <div class="location-stats">
-          <div class="stat-item">
-            <span>${locationInfo.services?.length || 0} services</span>
-          </div>
-          <div class="stat-item">
-            <span>${locationInfo.allStaffVariants?.length || 0} staff options</span>
-          </div>
-        </div>
+        <div class="location-name">${locationInfo.location.name}</div>
+        <div class="location-address">${addressStr}</div>
+        <div class="location-timezone">Timezone: ${locationInfo.location.tz}</div>
       `;
       panel.appendChild(header);
       
-      // Error handling for location
+      // Handle location errors
       if (locationInfo.error) {
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-state';
@@ -1130,175 +904,256 @@
       }
       
       // Services list
+      const servicesList = document.createElement('div');
+      servicesList.className = 'services-list';
+      
       if (!locationInfo.services || locationInfo.services.length === 0) {
-        const noServices = document.createElement('div');
-        noServices.className = 'no-data-state';
-        noServices.innerHTML = `
-          <h3>No Services Available</h3>
-          <p>No bookable services found for this location.</p>
+        servicesList.innerHTML = `
+          <div class="error-state">
+            <h3>No Services Available</h3>
+            <p>No bookable services found for this location.</p>
+          </div>
         `;
-        panel.appendChild(noServices);
       } else {
-        // Filter services if needed
-        const servicesToShow = selectedService === 'all' ? 
-          locationInfo.services : 
-          locationInfo.services.filter(service => service.name === selectedService);
-        
-        servicesToShow.forEach(service => {
-          const serviceSection = createServiceSection(service);
-          panel.appendChild(serviceSection);
+        locationInfo.services.forEach(service => {
+          const serviceElement = createServiceElement(service, locationInfo.cartId, locationInfo.location);
+          servicesList.appendChild(serviceElement);
         });
       }
       
+      panel.appendChild(servicesList);
       return panel;
     }
 
-    function createServiceSection(service) {
-      const section = document.createElement('div');
-      section.className = 'service-section';
+    /**
+     * Create a service element with click-to-expand functionality
+     * Staff will load when user clicks to expand
+     */
+    function createServiceElement(service, cartId, location) {
+      const serviceItem = document.createElement('div');
+      serviceItem.className = 'service-item';
       
-      // Filter staff variants if needed
-      const staffToShow = selectedStaff === 'all' ? 
-        service.staffVariants : 
-        service.staffVariants.filter(variant => 
-          variant.staff && (variant.staff.id === selectedStaff || 
-          `${variant.staff.firstName} ${variant.staff.lastName}` === selectedStaff)
-        );
+      // Service header (clickable)
+      const serviceHeader = document.createElement('div');
+      serviceHeader.className = 'service-header';
       
-      // Service header
-      const header = document.createElement('div');
-      header.className = 'service-header';
-      header.innerHTML = `
-        <div class="service-name">${service.name}</div>
-        <div class="service-staff-count">${staffToShow.length} staff</div>
+      const priceText = service.listPrice ? `$${service.listPrice}` : 'Price varies';
+      const durationText = service.listDuration ? ` • ${service.listDuration} min` : '';
+      
+      serviceHeader.innerHTML = `
+        <div class="service-info">
+          <div class="service-name">${service.name}</div>
+          <div class="service-description">${service.description || 'No description available'}</div>
+          <div class="service-price">${priceText}${durationText}</div>
+        </div>
+        <div class="expand-indicator">▼</div>
       `;
       
-      // Make header clickable to expand/collapse
-      header.addEventListener('click', () => {
-        const staffVariants = section.querySelector('.staff-variants');
-        staffVariants.classList.toggle('expanded');
+      // Service details container (hidden by default)
+      const serviceDetails = document.createElement('div');
+      serviceDetails.className = 'service-details';
+      
+      // Click handler to expand and load staff
+      serviceHeader.addEventListener('click', () => {
+        toggleServiceExpansion(serviceHeader, serviceDetails, service, cartId, location);
       });
       
-      section.appendChild(header);
+      serviceItem.appendChild(serviceHeader);
+      serviceItem.appendChild(serviceDetails);
       
-      // Staff variants container
-      const staffVariantsContainer = document.createElement('div');
-      staffVariantsContainer.className = 'staff-variants';
-      
-      if (staffToShow.length === 0) {
-        staffVariantsContainer.innerHTML = '<div class="availability-info">No staff available for this service</div>';
-      } else {
-        staffToShow.forEach(variant => {
-          const staffDiv = createStaffVariantDiv(variant);
-          staffVariantsContainer.appendChild(staffDiv);
-        });
-      }
-      
-      section.appendChild(staffVariantsContainer);
-      
-      return section;
+      return serviceItem;
     }
 
-    function createStaffVariantDiv(variant) {
-      const div = document.createElement('div');
-      div.className = 'staff-variant';
+    /**
+     * USER INTERACTION: Toggle service expansion and load staff if not already loaded
+     * This triggers API call #3 (fetch staff variants)
+     */
+    async function toggleServiceExpansion(header, detailsContainer, service, cartId, location) {
+      const isExpanded = header.classList.contains('expanded');
+      const indicator = header.querySelector('.expand-indicator');
       
-      const staffName = variant.staff ? 
-        `${variant.staff.firstName} ${variant.staff.lastName}` : 
-        'Unknown Staff';
+      if (isExpanded) {
+        // Collapse
+        header.classList.remove('expanded');
+        detailsContainer.classList.remove('expanded');
+        indicator.classList.remove('expanded');
+      } else {
+        // Expand
+        header.classList.add('expanded');
+        detailsContainer.classList.add('expanded');
+        indicator.classList.add('expanded');
+        
+        // Load staff if not already loaded
+        if (!detailsContainer.hasChildNodes()) {
+          await loadStaffForService(detailsContainer, service, cartId, location);
+        }
+      }
+    }
+
+    /**
+     * Load staff variants for a service (triggered by user clicking service)
+     * Shows loading spinner while fetching
+     */
+    async function loadStaffForService(container, service, cartId, location) {
+      console.log(`🔄 LOADING STAFF: User clicked on service ${service.name}`);
       
-      const staffInfo = document.createElement('div');
-      staffInfo.className = 'staff-info';
-      staffInfo.innerHTML = `
-        <div class="staff-name">${staffName}</div>
-        <div class="staff-price">$${variant.price} (${variant.duration}min)</div>
+      // Show loading state
+      container.innerHTML = '<div class="staff-loading"><span class="spinner"></span>Loading staff...</div>';
+      
+      try {
+        // API CALL #3: Fetch staff variants for this service
+        const staffVariants = await fetchStaffVariants(cartId, service.id);
+        
+        // Clear loading state and render staff
+        container.innerHTML = '';
+        
+        if (staffVariants.length === 0) {
+          container.innerHTML = '<div class="staff-loading">No staff available for this service</div>';
+          return;
+        }
+        
+        const staffList = document.createElement('div');
+        staffList.className = 'staff-list';
+        
+        staffVariants.forEach(staffVariant => {
+          const staffElement = createStaffElement(staffVariant, service, cartId, location);
+          staffList.appendChild(staffElement);
+        });
+        
+        container.appendChild(staffList);
+        
+      } catch (error) {
+        console.error('Failed to load staff:', error);
+        container.innerHTML = `<div class="staff-loading">Error loading staff: ${error.message}</div>`;
+      }
+    }
+
+    /**
+     * Create a staff element with click-to-expand functionality
+     * Times will load when user clicks to expand
+     */
+    function createStaffElement(staffVariant, service, cartId, location) {
+      const staffItem = document.createElement('div');
+      staffItem.className = 'staff-item';
+      
+      // Staff header (clickable)
+      const staffHeader = document.createElement('div');
+      staffHeader.className = 'staff-header';
+      
+      const staffName = staffVariant.staff ? 
+        `${staffVariant.staff.firstName} ${staffVariant.staff.lastName}` : 
+        'Staff Member';
+      
+      staffHeader.innerHTML = `
+        <div class="staff-info">
+          <div class="staff-name">${staffName}</div>
+          <div class="staff-details">${staffVariant.duration} minutes</div>
+        </div>
+        <div class="staff-price">$${staffVariant.price}</div>
       `;
-      div.appendChild(staffInfo);
       
-      // Availability info
-      const availabilityInfo = document.createElement('div');
-      availabilityInfo.className = 'availability-info';
+      // Times container (hidden by default)
+      const timesSection = document.createElement('div');
+      timesSection.className = 'times-section';
       
-      if (variant.hasAvailability && variant.availableTimes.length > 0) {
-        availabilityInfo.textContent = `${variant.availableTimes.length} available times`;
+      // Click handler to expand and load times
+      staffHeader.addEventListener('click', () => {
+        toggleStaffExpansion(staffHeader, timesSection, staffVariant, service, cartId, location);
+      });
+      
+      staffItem.appendChild(staffHeader);
+      staffItem.appendChild(timesSection);
+      
+      return staffItem;
+    }
+
+    /**
+     * USER INTERACTION: Toggle staff expansion and load times if not already loaded
+     * This triggers API calls #4 and #5 (add to cart + fetch times)
+     */
+    async function toggleStaffExpansion(header, timesContainer, staffVariant, service, cartId, location) {
+      const isExpanded = header.classList.contains('expanded');
+      
+      if (isExpanded) {
+        // Collapse
+        header.classList.remove('expanded');
+        timesContainer.classList.remove('expanded');
+      } else {
+        // Expand
+        header.classList.add('expanded');
+        timesContainer.classList.add('expanded');
         
-        // Show first few time slots
-        const timesContainer = document.createElement('div');
-        timesContainer.className = 'availability-times';
+        // Load times if not already loaded
+        if (!timesContainer.hasChildNodes()) {
+          await loadTimesForStaff(timesContainer, staffVariant, service, cartId, location);
+        }
+      }
+    }
+
+    /**
+     * Load available times for staff (triggered by user clicking staff)
+     * This is the most expensive operation and only runs on user demand
+     */
+    async function loadTimesForStaff(container, staffVariant, service, cartId, location) {
+      const staffName = staffVariant.staff ? 
+        `${staffVariant.staff.firstName} ${staffVariant.staff.lastName}` : 
+        'staff member';
+      
+      console.log(`🔄 LOADING TIMES: User clicked on ${staffName} for ${service.name}`);
+      
+      // Show loading state
+      container.innerHTML = '<div class="times-loading"><span class="spinner"></span>Loading available times...</div>';
+      
+      try {
+        // API CALL #4: Add service/staff to cart first
+        await addServiceToCart(cartId, service.id, staffVariant.id);
         
-        variant.availableTimes.slice(0, 6).forEach(time => {
-          const timeSlot = document.createElement('span');
-          timeSlot.className = 'time-slot';
-          timeSlot.textContent = new Date(`2000-01-01T${time.startTime}`).toLocaleTimeString('en-US', {
+        // API CALL #5: Fetch available times for selected date
+        const dateStr = currentDate.toISOString().split('T')[0];
+        const availableTimes = await fetchAvailableTimes(cartId, dateStr, location.tz);
+        
+        // Clear loading state and render times
+        container.innerHTML = '';
+        
+        if (availableTimes.length === 0) {
+          container.innerHTML = '<div class="no-times">No available times for this date</div>';
+          return;
+        }
+        
+        const timesGrid = document.createElement('div');
+        timesGrid.className = 'times-grid';
+        
+        availableTimes.forEach(timeSlot => {
+          const timeElement = document.createElement('div');
+          timeElement.className = 'time-slot';
+          
+          // Format the time for display
+          const timeStr = new Date(`2000-01-01T${timeSlot.startTime}`).toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: '2-digit',
             hour12: true
           });
-          timesContainer.appendChild(timeSlot);
+          
+          timeElement.textContent = timeStr;
+          
+          // Click handler for time selection (demo only)
+          timeElement.addEventListener('click', () => {
+            alert(`Selected ${timeStr} with ${staffName} for ${service.name}!\n\nIn a real app, this would proceed to booking confirmation.`);
+          });
+          
+          timesGrid.appendChild(timeElement);
         });
         
-        if (variant.availableTimes.length > 6) {
-          const moreSlot = document.createElement('span');
-          moreSlot.className = 'time-slot';
-          moreSlot.textContent = `+${variant.availableTimes.length - 6} more`;
-          timesContainer.appendChild(moreSlot);
-        }
+        container.appendChild(timesGrid);
         
-        div.appendChild(timesContainer);
-      } else {
-        availabilityInfo.textContent = 'No availability for selected date';
+      } catch (error) {
+        console.error('Failed to load times:', error);
+        container.innerHTML = `<div class="times-loading">Error loading times: ${error.message}</div>`;
       }
-      
-      div.appendChild(availabilityInfo);
-      
-      return div;
     }
 
     // =============================================================================
-    // 10. POPULATE FILTER DROPDOWNS
-    // =============================================================================
-
-    function populateLocationFilter(locations) {
-      const dropdown = document.getElementById('locationDropdown');
-      dropdown.innerHTML = '<div class="dropdown-item" data-location="all">All Locations</div>';
-      
-      locations.forEach(location => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item';
-        item.setAttribute('data-location', location.name);
-        item.textContent = location.name;
-        dropdown.appendChild(item);
-      });
-    }
-
-    function populateServiceFilter(services) {
-      const dropdown = document.getElementById('serviceDropdown');
-      dropdown.innerHTML = '<div class="dropdown-item" data-service="all">All Services</div>';
-      
-      services.forEach(service => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item';
-        item.setAttribute('data-service', service.name);
-        item.textContent = service.name;
-        dropdown.appendChild(item);
-      });
-    }
-
-    function populateStaffFilter(staff) {
-      const dropdown = document.getElementById('staffDropdown');
-      dropdown.innerHTML = '<div class="dropdown-item" data-staff="all">All Staff</div>';
-      
-      staff.forEach(member => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item';
-        item.setAttribute('data-staff', member.id);
-        item.textContent = `${member.firstName} ${member.lastName} (${member.services.join(', ')})`;
-        dropdown.appendChild(item);
-      });
-    }
-
-    // =============================================================================
-    // 11. UPDATE DATE DISPLAY
+    // DATE NAVIGATION AND UTILITIES
     // =============================================================================
 
     function updateDateDisplay() {
@@ -1312,152 +1167,97 @@
       dateElement.textContent = currentDate.toLocaleDateString('en-US', options);
     }
 
-    // =============================================================================
-    // 12. MAIN INITIALIZATION FUNCTION
-    // =============================================================================
-
+    /**
+     * Main function to load and render the dashboard
+     * Only loads locations and services - staff/times load on demand
+     */
     async function loadAndRenderDashboard() {
-      console.log('🚀 Initializing Boulevard Client API Dashboard...');
+      console.log('🚀 Initializing fast-loading dashboard...');
       
-      // Show loading state
       const container = document.getElementById('dashboard-container');
-      container.innerHTML = '<div class="loading-state">Loading service availability from Boulevard Client API...</div>';
+      container.innerHTML = '<div class="loading-state">Loading business locations and services...</div>';
       
-      // Load and render data
-      dashboardData = await loadDashboardData(currentDate);
-      
-      // Populate filters if we have data
-      if (dashboardData && !dashboardData.error) {
-        populateLocationFilter(dashboardData.locations);
-        populateServiceFilter(dashboardData.allServices);
-        populateStaffFilter(dashboardData.allStaff);
+      try {
+        dashboardData = await loadInitialDashboardData();
+        renderDashboard(dashboardData);
+      } catch (error) {
+        console.error('❌ Failed to load dashboard:', error);
+        container.innerHTML = `
+          <div class="error-state">
+            <h3>Error Loading Dashboard</h3>
+            <p>${error.message}</p>
+            <p>Please check your Boulevard configuration and API key.</p>
+            <button onclick="loadAndRenderDashboard()">Retry</button>
+          </div>
+        `;
       }
+    }
+
+    /**
+     * Test function to verify API connectivity
+     */
+    async function testBoulevardAPI() {
+      console.log('🧪 Testing Boulevard Client API...');
       
-      renderDashboard(dashboardData);
+      try {
+        const locations = await fetchBusinessLocations();
+        console.log(`✅ API Test Successful: Found ${locations.length} locations`);
+        alert(`API Test Successful!\n\nFound ${locations.length} business locations.\nCheck console for detailed logs.`);
+      } catch (error) {
+        console.error('💥 API Test Failed:', error);
+        alert(`API Test Failed!\n\nError: ${error.message}\nCheck console for details.`);
+      }
     }
 
     // =============================================================================
-    // 13. EVENT LISTENERS
+    // EVENT LISTENERS AND INITIALIZATION
     // =============================================================================
 
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('📱 Page loaded, starting Boulevard Client API dashboard...');
+      console.log('📱 Dashboard loading with smart lazy-loading...');
       
-      // Check configuration
-      if (BOULEVARD_CONFIG.businessId.includes('YOUR_') || BOULEVARD_CONFIG.apiKey.includes('YOUR_')) {
-        const container = document.getElementById('dashboard-container');
-        container.innerHTML = `
-          <div class="error-state">
-            <h3>Configuration Required</h3>
-            <p>Please update the BOULEVARD_CONFIG object with your actual business ID and API key.</p>
-            <p>Find the configuration at the top of the JavaScript section.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      // Initialize date display
       updateDateDisplay();
-      
-      // Load initial data
       loadAndRenderDashboard();
       
-      // Date navigation
+      // Date navigation - reloads data when date changes
       document.getElementById('prevDay').addEventListener('click', () => {
         currentDate.setDate(currentDate.getDate() - 1);
         updateDateDisplay();
+        // Note: Expanded staff/times will need to reload for new date
+        // For simplicity, we reload the entire dashboard
         loadAndRenderDashboard();
       });
       
       document.getElementById('nextDay').addEventListener('click', () => {
         currentDate.setDate(currentDate.getDate() + 1);
         updateDateDisplay();
-        loadAndRenderDashboard();
-      });
-      
-      // Location filter
-      document.getElementById('locationFilter').addEventListener('click', () => {
-        const dropdown = document.getElementById('locationDropdown');
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-      });
-      
-      document.getElementById('locationDropdown').addEventListener('click', (e) => {
-        if (e.target.classList.contains('dropdown-item')) {
-          selectedLocation = e.target.getAttribute('data-location');
-          document.getElementById('locationFilter').textContent = e.target.textContent + ' ▼';
-          document.getElementById('locationDropdown').style.display = 'none';
-          loadAndRenderDashboard();
-        }
-      });
-      
-      // Service filter
-      document.getElementById('serviceFilter').addEventListener('click', () => {
-        const dropdown = document.getElementById('serviceDropdown');
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-      });
-      
-      document.getElementById('serviceDropdown').addEventListener('click', (e) => {
-        if (e.target.classList.contains('dropdown-item')) {
-          selectedService = e.target.getAttribute('data-service');
-          document.getElementById('serviceFilter').textContent = e.target.textContent + ' ▼';
-          document.getElementById('serviceDropdown').style.display = 'none';
-          loadAndRenderDashboard();
-        }
-      });
-      
-      // Staff filter
-      document.getElementById('staffFilter').addEventListener('click', () => {
-        const dropdown = document.getElementById('staffDropdown');
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-      });
-      
-      document.getElementById('staffDropdown').addEventListener('click', (e) => {
-        if (e.target.classList.contains('dropdown-item')) {
-          selectedStaff = e.target.getAttribute('data-staff');
-          document.getElementById('staffFilter').textContent = e.target.textContent + ' ▼';
-          document.getElementById('staffDropdown').style.display = 'none';
-          loadAndRenderDashboard();
-        }
-      });
-      
-      // Refresh button
-      document.getElementById('refreshData').addEventListener('click', () => {
-        // Clear cached carts
-        activeCarts.clear();
+        // Note: Expanded staff/times will need to reload for new date
+        // For simplicity, we reload the entire dashboard
         loadAndRenderDashboard();
       });
       
       // Test API button
-      document.getElementById('testAPI').addEventListener('click', () => {
-        testClientAPI();
-      });
-      
-      // Close dropdowns when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.filter-dropdown')) {
-          document.querySelectorAll('.dropdown-content').forEach(dropdown => {
-            dropdown.style.display = 'none';
-          });
-        }
-      });
+      document.getElementById('testAPI').addEventListener('click', testBoulevardAPI);
     });
 
-    // Export functions for manual testing
-    window.boulevardClientAPI = {
+    // Export for debugging
+    window.boulevardDashboard = {
+      testAPI: testBoulevardAPI,
+      loadAndRenderDashboard,
+      makeBoulevardRequest,
       fetchBusinessLocations,
-      createCartForLocation,
-      getStaffVariantsForService,
-      getAvailableDatesForCart,
-      getAvailableTimesForDate,
+      createCartAndFetchServices,
+      fetchStaffVariants,
       addServiceToCart,
-      loadDashboardData,
-      testClientAPI,
-      makeBoulevardRequest
+      fetchAvailableTimes
     };
 
-    console.log('✅ Boulevard Client API dashboard loaded');
-    console.log('🧪 Run window.boulevardClientAPI.testClientAPI() to test your API connection');
-    console.log('⚠️ Remember to update BOULEVARD_CONFIG with your actual business ID and API key');
+    console.log('✅ Fast-loading Boulevard dashboard initialized');
+    console.log('📋 Data Loading Strategy:');
+    console.log('  - Locations & Services: Load immediately (fast)');
+    console.log('  - Staff: Load only when user clicks service (on-demand)');
+    console.log('  - Times: Load only when user clicks staff (on-demand)');
+    console.log('🚀 This prevents rate limits and ensures blazing fast performance!');
   </script>
 </body>
 </html>
