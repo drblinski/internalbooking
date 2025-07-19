@@ -135,6 +135,21 @@
       background: #0056d6;
     }
     
+    .test-button {
+      background: #34c759;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+    
+    .test-button:hover {
+      background: #30a752;
+    }
+    
     .legend {
       display: flex;
       gap: 20px;
@@ -299,49 +314,6 @@
       border-bottom: none;
     }
     
-    .time-slots {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 6px;
-      margin-top: 12px;
-    }
-    
-    .time-slot {
-      padding: 6px 8px;
-      border-radius: 6px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid transparent;
-      position: relative;
-    }
-    
-    .time-slot.available {
-      background: #e8f5e8;
-      color: #2e7d32;
-      border-color: #c8e6c9;
-    }
-    
-    .time-slot.booked {
-      background: #ffebee;
-      color: #d32f2f;
-      border-color: #ffcdd2;
-    }
-    
-    .time-slot.off-shift {
-      background: #f5f5f5;
-      color: #999;
-      border-color: #e0e0e0;
-      cursor: not-allowed;
-    }
-    
-    .time-slot:hover:not(.off-shift) {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
     .loading-state {
       display: flex;
       align-items: center;
@@ -446,16 +418,6 @@
       .locations-grid {
         grid-template-columns: 1fr;
       }
-      
-      .time-slots {
-        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-        gap: 4px;
-      }
-      
-      .time-slot {
-        padding: 4px 6px;
-        font-size: 11px;
-      }
     }
   </style>
 </head>
@@ -488,6 +450,7 @@
         </div>
         
         <button class="refresh-button" id="refreshData">Refresh</button>
+        <button class="test-button" id="testAPI">Test API</button>
       </div>
       
       <div class="legend">
@@ -517,7 +480,7 @@
 
   <script>
     // =============================================================================
-    // BOULEVARD ADMIN API QUERIES - REAL DATA IMPLEMENTATION
+    // BOULEVARD ADMIN API - CORRECTED QUERIES WITH URNS
     // =============================================================================
 
     // Global State
@@ -526,9 +489,24 @@
     let selectedStaff = 'all';
     let dashboardData = null;
 
+    // Helper function to ensure IDs are in URN format
+    function ensureURN(id, type) {
+      if (!id) return null;
+      
+      // If already a URN, return as-is
+      if (id.startsWith('urn:blvd:')) {
+        return id;
+      }
+      
+      // Convert UUID to URN
+      return `urn:blvd:${type}:${id}`;
+    }
+
     // API Helper Function
     async function queryBoulevard(query, variables = {}) {
       console.log('🔥 Making Boulevard API request...');
+      console.log('Query:', query.substring(0, 200) + '...');
+      console.log('Variables:', variables);
       
       const response = await fetch('/api/blvd', {
         method: 'POST',
@@ -542,7 +520,9 @@
       });
       
       if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API request failed: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
@@ -556,67 +536,7 @@
     }
 
     // =============================================================================
-    // 1. FETCH ALL REAL STAFF WITH LOCATIONS
-    // =============================================================================
-
-    const STAFF_QUERY = `
-      query GetAllStaff($first: Int!) {
-        staff(first: $first) {
-          edges {
-            node {
-              id
-              firstName
-              lastName
-              email
-              active
-              role {
-                id
-                name
-              }
-              locations {
-                id
-                name
-              }
-            }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }
-    `;
-
-    async function fetchAllStaff() {
-      console.log('🔍 Fetching all real staff...');
-      
-      try {
-        const data = await queryBoulevard(STAFF_QUERY, { first: 100 });
-        
-        if (!data.staff || !data.staff.edges) {
-          console.log('⚠️ No staff data returned');
-          return [];
-        }
-        
-        const staff = data.staff.edges
-          .map(edge => edge.node)
-          .filter(staff => staff.active); // Only active staff
-        
-        console.log(`✅ Found ${staff.length} active staff members`);
-        staff.forEach(s => {
-          console.log(`  - ${s.firstName} ${s.lastName} (${s.role?.name || 'No role'}) - Locations: ${s.locations.map(l => l.name).join(', ')}`);
-        });
-        
-        return staff;
-        
-      } catch (error) {
-        console.error('❌ Failed to fetch staff:', error);
-        return [];
-      }
-    }
-
-    // =============================================================================
-    // 2. FETCH ALL LOCATIONS WITH BUSINESS HOURS
+    // 1. FETCH ALL LOCATIONS (ROOT QUERY) - CORRECTED
     // =============================================================================
 
     const LOCATIONS_QUERY = `
@@ -636,6 +556,10 @@
               }
               isActive
             }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
       }
@@ -658,7 +582,7 @@
         
         console.log(`✅ Found ${locations.length} active locations`);
         locations.forEach(l => {
-          console.log(`  - ${l.name} (${l.businessName})`);
+          console.log(`  - ${l.name} (${l.businessName}) - ID: ${l.id}`);
         });
         
         return locations;
@@ -670,7 +594,81 @@
     }
 
     // =============================================================================
-    // 3. FETCH SHIFTS FOR LOCATION AND DATE
+    // 2. FETCH ALL STAFF USING LOCATION-BASED APPROACH - CORRECTED
+    // =============================================================================
+
+    const LOCATION_STAFF_QUERY = `
+      query GetLocationStaff($id: ID!) {
+        location(id: $id) {
+          id
+          name
+          staff {
+            id
+            firstName
+            lastName
+            email
+            active
+            role {
+              id
+              name
+            }
+          }
+        }
+      }
+    `;
+
+    async function fetchAllStaff(locations) {
+      console.log('🔍 Fetching all staff from all locations...');
+      
+      try {
+        const staffMap = new Map();
+        
+        // For each location, get staff
+        for (const location of locations) {
+          console.log(`Getting staff for location: ${location.name}`);
+          
+          // Ensure location ID is in URN format
+          const locationIdURN = ensureURN(location.id, 'Location');
+          
+          const data = await queryBoulevard(LOCATION_STAFF_QUERY, { 
+            id: locationIdURN 
+          });
+          
+          if (data.location && data.location.staff) {
+            data.location.staff.forEach(staff => {
+              if (staff.active) {
+                if (!staffMap.has(staff.id)) {
+                  staffMap.set(staff.id, {
+                    ...staff,
+                    locations: [location]
+                  });
+                } else {
+                  // Add this location to existing staff member
+                  const existingStaff = staffMap.get(staff.id);
+                  existingStaff.locations.push(location);
+                }
+              }
+            });
+          }
+        }
+        
+        const allStaff = Array.from(staffMap.values());
+        
+        console.log(`✅ Found ${allStaff.length} active staff members across all locations`);
+        allStaff.forEach(s => {
+          console.log(`  - ${s.firstName} ${s.lastName} (${s.role?.name || 'No role'}) - Locations: ${s.locations.map(l => l.name).join(', ')}`);
+        });
+        
+        return allStaff;
+        
+      } catch (error) {
+        console.error('❌ Failed to fetch staff:', error);
+        return [];
+      }
+    }
+
+    // =============================================================================
+    // 3. FETCH SHIFTS FOR LOCATION AND DATE - CORRECTED WITH URNS
     // =============================================================================
 
     const SHIFTS_QUERY = `
@@ -709,6 +707,9 @@
       console.log(`📅 Fetching shifts for location ${locationId} on ${date.toISOString().split('T')[0]}...`);
       
       try {
+        // Ensure location ID is in URN format
+        const locationIdURN = ensureURN(locationId, 'Location');
+        
         // Create start and end of day in ISO format
         const startOfDay = new Date(date);
         startOfDay.setHours(0, 0, 0, 0);
@@ -716,7 +717,7 @@
         endOfDay.setHours(23, 59, 59, 999);
         
         const data = await queryBoulevard(SHIFTS_QUERY, {
-          locationId: locationId,
+          locationId: locationIdURN,
           startIso8601: startOfDay.toISOString(),
           endIso8601: endOfDay.toISOString(),
           first: 100
@@ -744,7 +745,7 @@
     }
 
     // =============================================================================
-    // 4. FETCH APPOINTMENTS FOR LOCATION AND DATE
+    // 4. FETCH APPOINTMENTS FOR LOCATION AND DATE - CORRECTED WITH URNS
     // =============================================================================
 
     const APPOINTMENTS_QUERY = `
@@ -803,13 +804,16 @@
       console.log(`📋 Fetching appointments for location ${locationId} on ${date.toISOString().split('T')[0]}...`);
       
       try {
+        // Ensure location ID is in URN format
+        const locationIdURN = ensureURN(locationId, 'Location');
+        
         const startOfDay = new Date(date);
         startOfDay.setHours(0, 0, 0, 0);
         const endOfDay = new Date(date);
         endOfDay.setHours(23, 59, 59, 999);
         
         const data = await queryBoulevard(APPOINTMENTS_QUERY, {
-          locationId: locationId,
+          locationId: locationIdURN,
           after: startOfDay.toISOString(),
           before: endOfDay.toISOString(),
           first: 100
@@ -845,27 +849,88 @@
     }
 
     // =============================================================================
-    // 5. COMPLETE DASHBOARD DATA LOADING
+    // 5. ALTERNATIVE: TRY ROOT STAFFMEMBERS QUERY (IF IT EXISTS)
+    // =============================================================================
+
+    const STAFFMEMBERS_QUERY = `
+      query GetAllStaffMembers($first: Int!) {
+        staffMembers(first: $first) {
+          edges {
+            node {
+              id
+              firstName
+              lastName
+              email
+              active
+              role {
+                id
+                name
+              }
+              locations {
+                id
+                name
+              }
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+    `;
+
+    async function fetchAllStaffAlternative() {
+      console.log('🔍 Trying alternative staffMembers query...');
+      
+      try {
+        const data = await queryBoulevard(STAFFMEMBERS_QUERY, { first: 100 });
+        
+        if (!data.staffMembers || !data.staffMembers.edges) {
+          console.log('⚠️ No staffMembers data returned (query may not exist)');
+          return null;
+        }
+        
+        const staff = data.staffMembers.edges
+          .map(edge => edge.node)
+          .filter(staff => staff.active);
+        
+        console.log(`✅ Found ${staff.length} active staff members via staffMembers query`);
+        return staff;
+        
+      } catch (error) {
+        console.error('❌ staffMembers query failed (probably not available):', error);
+        return null;
+      }
+    }
+
+    // =============================================================================
+    // 6. COMPLETE DASHBOARD DATA LOADING - CORRECTED
     // =============================================================================
 
     async function loadDashboardData(selectedDate) {
       console.log(`🔄 Loading complete dashboard data for ${selectedDate.toISOString().split('T')[0]}...`);
       
       try {
-        // Step 1: Load all staff and locations
-        const [allStaff, allLocations] = await Promise.all([
-          fetchAllStaff(),
-          fetchAllLocations()
-        ]);
-        
-        if (allStaff.length === 0) {
-          console.error('❌ No staff found - check your Boulevard account setup');
-          return { error: 'No staff found in Boulevard account' };
-        }
+        // Step 1: Load all locations first
+        const allLocations = await fetchAllLocations();
         
         if (allLocations.length === 0) {
           console.error('❌ No locations found - check your Boulevard account setup');
           return { error: 'No locations found in Boulevard account' };
+        }
+        
+        // Step 2: Try to load staff using alternative method first, then fallback
+        let allStaff = await fetchAllStaffAlternative();
+        
+        if (!allStaff) {
+          console.log('📋 Falling back to location-based staff fetching...');
+          allStaff = await fetchAllStaff(allLocations);
+        }
+        
+        if (allStaff.length === 0) {
+          console.error('❌ No staff found - check your Boulevard account setup');
+          return { error: 'No staff found in Boulevard account' };
         }
         
         // Filter locations if needed
@@ -873,7 +938,7 @@
           allLocations : 
           allLocations.filter(loc => loc.name === selectedLocation);
         
-        // Step 2: For each location, load shifts and appointments
+        // Step 3: For each location, load shifts and appointments
         const locationData = await Promise.all(
           locationsToShow.map(async location => {
             console.log(`🏢 Processing location: ${location.name}...`);
@@ -883,14 +948,20 @@
               fetchAppointments(location.id, selectedDate)
             ]);
             
-            // Step 3: Find staff working at this location
+            // Step 4: Find staff working at this location
             const locationStaff = allStaff.filter(staff => 
-              staff.locations.some(loc => loc.id === location.id)
+              staff.locations && staff.locations.some(loc => 
+                loc.id === location.id || 
+                ensureURN(loc.id, 'Location') === ensureURN(location.id, 'Location')
+              )
             );
             
-            // Step 4: Map shifts to staff
+            // Step 5: Map shifts to staff
             const staffWithShifts = locationStaff.map(staff => {
-              const staffShift = shifts.find(shift => shift.staffId === staff.id);
+              const staffShift = shifts.find(shift => 
+                shift.staffId === staff.id || 
+                ensureURN(shift.staffId, 'Staff') === ensureURN(staff.id, 'Staff')
+              );
               return {
                 ...staff,
                 shift: staffShift || null,
@@ -929,7 +1000,48 @@
     }
 
     // =============================================================================
-    // 6. RENDER DASHBOARD WITH REAL DATA
+    // 7. TEST FUNCTION TO DEBUG API ISSUES
+    // =============================================================================
+
+    async function testBoulevardAPI() {
+      console.log('🧪 Testing Boulevard API endpoints...');
+      
+      try {
+        // Test 1: Locations
+        console.log('Test 1: Fetching locations...');
+        const locations = await fetchAllLocations();
+        console.log(`✅ Locations test: ${locations.length} found`);
+        
+        if (locations.length > 0) {
+          const firstLocation = locations[0];
+          console.log(`First location: ${firstLocation.name} (${firstLocation.id})`);
+          
+          // Test 2: Staff for first location
+          console.log('Test 2: Fetching staff for first location...');
+          const staff = await fetchAllStaff([firstLocation]);
+          console.log(`✅ Staff test: ${staff.length} found`);
+          
+          // Test 3: Shifts for first location
+          console.log('Test 3: Fetching shifts for first location...');
+          const shifts = await fetchShifts(firstLocation.id, new Date());
+          console.log(`✅ Shifts test: ${shifts.length} found`);
+          
+          // Test 4: Appointments for first location
+          console.log('Test 4: Fetching appointments for first location...');
+          const appointments = await fetchAppointments(firstLocation.id, new Date());
+          console.log(`✅ Appointments test: ${appointments.length} found`);
+        }
+        
+        console.log('🎉 All API tests completed successfully!');
+        
+      } catch (error) {
+        console.error('💥 API test failed:', error);
+        throw error;
+      }
+    }
+
+    // =============================================================================
+    // 8. RENDER DASHBOARD WITH REAL DATA
     // =============================================================================
 
     function renderDashboard(data) {
@@ -1094,7 +1206,7 @@
     }
 
     // =============================================================================
-    // 7. POPULATE FILTER DROPDOWNS
+    // 9. POPULATE FILTER DROPDOWNS
     // =============================================================================
 
     function populateLocationFilter(locations) {
@@ -1124,7 +1236,7 @@
     }
 
     // =============================================================================
-    // 8. UPDATE DATE DISPLAY
+    // 10. UPDATE DATE DISPLAY
     // =============================================================================
 
     function updateDateDisplay() {
@@ -1139,7 +1251,7 @@
     }
 
     // =============================================================================
-    // 9. MAIN INITIALIZATION FUNCTION
+    // 11. MAIN INITIALIZATION FUNCTION
     // =============================================================================
 
     async function loadAndRenderDashboard() {
@@ -1162,7 +1274,7 @@
     }
 
     // =============================================================================
-    // 10. EVENT LISTENERS
+    // 12. EVENT LISTENERS
     // =============================================================================
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -1222,6 +1334,11 @@
         loadAndRenderDashboard();
       });
       
+      // Test API button
+      document.getElementById('testAPI').addEventListener('click', () => {
+        testBoulevardAPI();
+      });
+      
       // Close dropdowns when clicking outside
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.filter-dropdown')) {
@@ -1234,16 +1351,19 @@
 
     // Export functions for manual testing
     window.boulevardAPI = {
-      fetchAllStaff,
       fetchAllLocations,
+      fetchAllStaff,
+      fetchAllStaffAlternative,
       fetchShifts,
       fetchAppointments,
       loadDashboardData,
-      loadAndRenderDashboard,
+      testBoulevardAPI,
+      ensureURN,
       queryBoulevard
     };
 
-    console.log('✅ Global Appointment Dashboard loaded with real Boulevard API implementation');
+    console.log('✅ Boulevard API functions loaded with URN support');
+    console.log('🧪 Run window.boulevardAPI.testBoulevardAPI() to test your API connection');
   </script>
 </body>
 </html>
