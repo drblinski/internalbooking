@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Get Plump - Global Appointment Dashboard</title>
+  <title>Get Plump - Service Availability Dashboard</title>
   
   <style>
     * {
@@ -79,6 +79,7 @@
       display: flex;
       gap: 16px;
       align-items: center;
+      flex-wrap: wrap;
     }
     
     .filter-dropdown {
@@ -121,7 +122,7 @@
       background: #f8f9fa;
     }
     
-    .refresh-button {
+    .refresh-button, .test-button {
       background: #007AFF;
       color: white;
       border: none;
@@ -129,21 +130,15 @@
       padding: 8px 16px;
       cursor: pointer;
       font-weight: 500;
-    }
-    
-    .refresh-button:hover {
-      background: #0056d6;
+      margin-left: 8px;
     }
     
     .test-button {
       background: #34c759;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-weight: 500;
-      margin-left: 8px;
+    }
+    
+    .refresh-button:hover {
+      background: #0056d6;
     }
     
     .test-button:hover {
@@ -170,8 +165,8 @@
     }
     
     .status-dot.available { background: #51cf66; }
-    .status-dot.booked { background: #ff6b6b; }
-    .status-dot.off-shift { background: #868e96; }
+    .status-dot.busy { background: #ff6b6b; }
+    .status-dot.no-service { background: #868e96; }
     
     .dashboard-content {
       background: #fff;
@@ -227,91 +222,108 @@
       border-radius: 50%;
     }
     
-    .business-hours {
+    .location-address {
       font-size: 12px;
       color: #888;
       margin-bottom: 16px;
     }
     
-    .staff-section {
+    .service-section {
       margin-bottom: 20px;
       border: 1px solid #f0f0f0;
       border-radius: 8px;
       padding: 16px;
     }
     
-    .staff-header {
+    .service-header {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 12px;
+      cursor: pointer;
     }
     
-    .staff-header.working {
-      background: #e8f5e8;
+    .service-header:hover {
+      background: #f8f9fa;
       padding: 8px;
       border-radius: 6px;
+      margin: -8px -8px 12px -8px;
     }
     
-    .staff-header.not-working {
-      background: #f5f5f5;
-      padding: 8px;
-      border-radius: 6px;
-      opacity: 0.7;
-    }
-    
-    .staff-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #007AFF;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    
-    .staff-info {
-      flex: 1;
-    }
-    
-    .staff-name {
+    .service-name {
       font-size: 16px;
       font-weight: 600;
       color: #1a1a1a;
+      flex: 1;
     }
     
-    .staff-role {
+    .service-staff-count {
       font-size: 12px;
       color: #666;
-      margin-top: 2px;
+      background: #f0f0f0;
+      padding: 4px 8px;
+      border-radius: 4px;
     }
     
-    .staff-shift {
-      font-size: 12px;
-      color: #007AFF;
-      font-weight: 500;
-      margin-top: 4px;
-    }
-    
-    .appointments-list {
+    .staff-variants {
       margin-top: 12px;
       padding: 12px;
       background: #f8f9fa;
       border-radius: 6px;
+      display: none;
     }
     
-    .appointment-item {
-      padding: 4px 0;
-      font-size: 13px;
-      color: #333;
+    .staff-variants.expanded {
+      display: block;
+    }
+    
+    .staff-variant {
+      padding: 8px 0;
       border-bottom: 1px solid #e0e0e0;
     }
     
-    .appointment-item:last-child {
+    .staff-variant:last-child {
       border-bottom: none;
+    }
+    
+    .staff-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    
+    .staff-name {
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+    
+    .staff-price {
+      font-size: 12px;
+      color: #007AFF;
+      font-weight: 500;
+    }
+    
+    .availability-info {
+      font-size: 12px;
+      color: #666;
+      font-style: italic;
+    }
+    
+    .availability-times {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    
+    .time-slot {
+      background: #e8f5e8;
+      color: #2d5a2d;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
     }
     
     .loading-state {
@@ -376,22 +388,19 @@
       margin-bottom: 8px;
     }
     
-    .no-data-state button {
-      margin-top: 16px;
-      background: #007AFF;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
+    .api-limitation-notice {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #856404;
     }
     
-    .no-staff {
-      text-align: center;
-      color: #666;
-      padding: 20px;
-      font-style: italic;
+    .api-limitation-notice h4 {
+      margin-bottom: 8px;
+      color: #856404;
     }
     
     /* Mobile Responsiveness */
@@ -423,9 +432,14 @@
 </head>
 <body>
   <div class="dashboard-container">
+    <div class="api-limitation-notice">
+      <h4>📋 Client API Dashboard</h4>
+      <p>This dashboard uses the Boulevard Client API, which is designed for booking flows. It shows available services and staff for booking, but cannot display existing appointments or administrative scheduling data. All availability shown is real-time booking availability.</p>
+    </div>
+    
     <div class="dashboard-header">
       <div class="header-top">
-        <h1 class="dashboard-title">Get Plump - Global Appointment Dashboard</h1>
+        <h1 class="dashboard-title">Get Plump - Service Availability Dashboard</h1>
         
         <div class="date-navigation">
           <button class="nav-button" id="prevDay">← Previous</button>
@@ -439,6 +453,13 @@
           All Locations ▼
           <div class="dropdown-content" id="locationDropdown">
             <div class="dropdown-item" data-location="all">All Locations</div>
+          </div>
+        </div>
+        
+        <div class="filter-dropdown" id="serviceFilter">
+          All Services ▼
+          <div class="dropdown-content" id="serviceDropdown">
+            <div class="dropdown-item" data-service="all">All Services</div>
           </div>
         </div>
         
@@ -456,15 +477,15 @@
       <div class="legend">
         <div class="legend-item">
           <div class="legend-dot status-dot available"></div>
-          <span>Available</span>
+          <span>Available Times</span>
         </div>
         <div class="legend-item">
-          <div class="legend-dot status-dot booked"></div>
-          <span>Booked</span>
+          <div class="legend-dot status-dot busy"></div>
+          <span>Limited Availability</span>
         </div>
         <div class="legend-item">
-          <div class="legend-dot status-dot off-shift"></div>
-          <span>Off Shift</span>
+          <div class="legend-dot status-dot no-service"></div>
+          <span>No Service Available</span>
         </div>
       </div>
     </div>
@@ -472,7 +493,7 @@
     <div class="dashboard-content">
       <div id="dashboard-container" class="locations-grid">
         <div class="loading-state">
-          Loading real Boulevard data...
+          Loading service availability from Boulevard Client API...
         </div>
       </div>
     </div>
@@ -480,318 +501,131 @@
 
   <script>
     // =============================================================================
-    // BOULEVARD ADMIN API - CORRECTED QUERIES WITH URNS
+    // BOULEVARD CLIENT API CONFIGURATION
     // =============================================================================
+
+    // Configuration - Updated with your actual values
+    const BOULEVARD_CONFIG = {
+      businessId: 'f6a06736-1132-4365-b79a-a69c648a746a',
+      apiKey: '93ca3f15-6f0e-491d-840b-681a0fef80ed',
+      endpoint: 'https://dashboard.boulevard.io/api/2020-01/f6a06736-1132-4365-b79a-a69c648a746a/client'
+    };
 
     // Global State
     let currentDate = new Date();
     let selectedLocation = 'all';
+    let selectedService = 'all';
     let selectedStaff = 'all';
     let dashboardData = null;
+    let activeCarts = new Map(); // Track carts created for each location
 
-    // Helper function to ensure IDs are in URN format
-    function ensureURN(id, type) {
-      if (!id) return null;
-      
-      // If already a URN, return as-is
-      if (id.startsWith('urn:blvd:')) {
-        return id;
-      }
-      
-      // Convert UUID to URN
-      return `urn:blvd:${type}:${id}`;
-    }
+    // =============================================================================
+    // BOULEVARD CLIENT API HELPER FUNCTION
+    // =============================================================================
 
-    // API Helper Function
-    async function queryBoulevard(query, variables = {}) {
-      console.log('🔥 Making Boulevard API request...');
+    function makeBoulevardRequest(query, variables = {}) {
+      console.log('🔥 Making Boulevard Client API request...');
       console.log('Query:', query.substring(0, 200) + '...');
       console.log('Variables:', variables);
       
-      const response = await fetch('/api/blvd', {
+      return fetch(BOULEVARD_CONFIG.endpoint, {
         method: 'POST',
         headers: {
+          'Authorization': 'Basic ' + btoa(BOULEVARD_CONFIG.apiKey + ':'),
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
           query: query,
           variables: variables
         })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.errors && data.errors.length > 0) {
+          console.error('GraphQL errors:', data.errors);
+          throw new Error(data.errors[0].message);
+        }
+        return data.data;
       });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API Error Response:', errorText);
-        throw new Error(`API request failed: ${response.status} - ${errorText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.errors && data.errors.length > 0) {
-        console.error('GraphQL errors:', data.errors);
-        throw new Error(`GraphQL Error: ${data.errors[0].message}`);
-      }
-      
-      return data.data;
     }
 
     // =============================================================================
-    // 1. FETCH ALL LOCATIONS (ROOT QUERY) - CORRECTED
+    // 1. FETCH BUSINESS LOCATIONS (CLIENT API)
     // =============================================================================
 
-    const LOCATIONS_QUERY = `
-      query GetAllLocations($first: Int!) {
-        locations(first: $first) {
-          edges {
-            node {
-              id
-              name
-              businessName
-              tz
-              businessHours {
-                day
-                startTime
-                endTime
-                isClosed
+    const BUSINESS_LOCATIONS_QUERY = `
+      query GetBusinessLocations {
+        business {
+          locations(first: 20) {
+            edges {
+              node {
+                id
+                name
+                tz
+                address {
+                  line1
+                  line2
+                  city
+                  state
+                  zip
+                }
               }
-              isActive
             }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
           }
         }
       }
     `;
 
-    async function fetchAllLocations() {
-      console.log('🏢 Fetching all locations...');
+    async function fetchBusinessLocations() {
+      console.log('🏢 Fetching business locations...');
       
       try {
-        const data = await queryBoulevard(LOCATIONS_QUERY, { first: 50 });
+        const data = await makeBoulevardRequest(BUSINESS_LOCATIONS_QUERY);
         
-        if (!data.locations || !data.locations.edges) {
+        if (!data.business || !data.business.locations || !data.business.locations.edges) {
           console.log('⚠️ No locations data returned');
           return [];
         }
         
-        const locations = data.locations.edges
-          .map(edge => edge.node)
-          .filter(location => location.isActive);
+        const locations = data.business.locations.edges.map(edge => edge.node);
         
-        console.log(`✅ Found ${locations.length} active locations`);
+        console.log(`✅ Found ${locations.length} business locations`);
         locations.forEach(l => {
-          console.log(`  - ${l.name} (${l.businessName}) - ID: ${l.id}`);
+          console.log(`  - ${l.name} - ID: ${l.id}`);
         });
         
         return locations;
         
       } catch (error) {
-        console.error('❌ Failed to fetch locations:', error);
+        console.error('❌ Failed to fetch business locations:', error);
         return [];
       }
     }
 
     // =============================================================================
-    // 2. FETCH ALL STAFF USING LOCATION-BASED APPROACH - CORRECTED
+    // 2. CREATE CART FOR LOCATION TO DISCOVER SERVICES (CLIENT API)
     // =============================================================================
 
-    const LOCATION_STAFF_QUERY = `
-      query GetLocationStaff($id: ID!) {
-        location(id: $id) {
-          id
-          name
-          staff {
+    const CREATE_CART_QUERY = `
+      mutation CreateCart($locationId: ID!) {
+        createCart(input: { locationId: $locationId }) {
+          cart {
             id
-            firstName
-            lastName
-            email
-            active
-            role {
-              id
+            availableCategories {
               name
-            }
-          }
-        }
-      }
-    `;
-
-    async function fetchAllStaff(locations) {
-      console.log('🔍 Fetching all staff from all locations...');
-      
-      try {
-        const staffMap = new Map();
-        
-        // For each location, get staff
-        for (const location of locations) {
-          console.log(`Getting staff for location: ${location.name}`);
-          
-          // Ensure location ID is in URN format
-          const locationIdURN = ensureURN(location.id, 'Location');
-          
-          const data = await queryBoulevard(LOCATION_STAFF_QUERY, { 
-            id: locationIdURN 
-          });
-          
-          if (data.location && data.location.staff) {
-            data.location.staff.forEach(staff => {
-              if (staff.active) {
-                if (!staffMap.has(staff.id)) {
-                  staffMap.set(staff.id, {
-                    ...staff,
-                    locations: [location]
-                  });
-                } else {
-                  // Add this location to existing staff member
-                  const existingStaff = staffMap.get(staff.id);
-                  existingStaff.locations.push(location);
-                }
-              }
-            });
-          }
-        }
-        
-        const allStaff = Array.from(staffMap.values());
-        
-        console.log(`✅ Found ${allStaff.length} active staff members across all locations`);
-        allStaff.forEach(s => {
-          console.log(`  - ${s.firstName} ${s.lastName} (${s.role?.name || 'No role'}) - Locations: ${s.locations.map(l => l.name).join(', ')}`);
-        });
-        
-        return allStaff;
-        
-      } catch (error) {
-        console.error('❌ Failed to fetch staff:', error);
-        return [];
-      }
-    }
-
-    // =============================================================================
-    // 3. FETCH SHIFTS FOR LOCATION AND DATE - CORRECTED WITH URNS
-    // =============================================================================
-
-    const SHIFTS_QUERY = `
-      query GetLocationShifts($locationId: ID!, $startIso8601: DateTime!, $endIso8601: DateTime!, $first: Int!) {
-        shifts(
-          locationId: $locationId,
-          startIso8601: $startIso8601,
-          endIso8601: $endIso8601,
-          first: $first
-        ) {
-          edges {
-            node {
-              id
-              staffId
-              locationId
-              date
-              startTime
-              endTime
-              available
-              staff {
-                id
-                firstName
-                lastName
-              }
-              location {
+              availableItems {
                 id
                 name
-              }
-            }
-          }
-        }
-      }
-    `;
-
-    async function fetchShifts(locationId, date) {
-      console.log(`📅 Fetching shifts for location ${locationId} on ${date.toISOString().split('T')[0]}...`);
-      
-      try {
-        // Ensure location ID is in URN format
-        const locationIdURN = ensureURN(locationId, 'Location');
-        
-        // Create start and end of day in ISO format
-        const startOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
-        
-        const data = await queryBoulevard(SHIFTS_QUERY, {
-          locationId: locationIdURN,
-          startIso8601: startOfDay.toISOString(),
-          endIso8601: endOfDay.toISOString(),
-          first: 100
-        });
-        
-        if (!data.shifts || !data.shifts.edges) {
-          console.log(`⚠️ No shifts found for location ${locationId}`);
-          return [];
-        }
-        
-        const shifts = data.shifts.edges.map(edge => edge.node);
-        
-        console.log(`✅ Found ${shifts.length} shifts for location`);
-        shifts.forEach(shift => {
-          const staffName = shift.staff ? `${shift.staff.firstName} ${shift.staff.lastName}` : 'Unknown Staff';
-          console.log(`  - ${staffName}: ${shift.startTime} - ${shift.endTime} (Available: ${shift.available})`);
-        });
-        
-        return shifts;
-        
-      } catch (error) {
-        console.error(`❌ Failed to fetch shifts for location ${locationId}:`, error);
-        return [];
-      }
-    }
-
-    // =============================================================================
-    // 4. FETCH APPOINTMENTS FOR LOCATION AND DATE - CORRECTED WITH URNS
-    // =============================================================================
-
-    const APPOINTMENTS_QUERY = `
-      query GetLocationAppointments($locationId: ID!, $after: DateTime!, $before: DateTime!, $first: Int!) {
-        appointments(
-          locationId: $locationId,
-          after: $after,
-          before: $before,
-          first: $first
-        ) {
-          edges {
-            node {
-              id
-              startAt
-              endAt
-              state
-              cancelled
-              client {
-                id
-                firstName
-                lastName
-              }
-              staff {
-                id
-                firstName
-                lastName
-              }
-              location {
-                id
-                name
-              }
-              appointmentServices {
-                id
-                startAt
-                endAt
-                duration
-                service {
-                  name
-                  category {
-                    name
-                  }
-                }
-                staff {
-                  id
-                  firstName
-                  lastName
+                description
+                ... on CartAvailableBookableItem {
+                  listPrice
+                  listDuration
                 }
               }
             }
@@ -800,197 +634,366 @@
       }
     `;
 
-    async function fetchAppointments(locationId, date) {
-      console.log(`📋 Fetching appointments for location ${locationId} on ${date.toISOString().split('T')[0]}...`);
+    async function createCartForLocation(locationId) {
+      console.log(`🛒 Creating cart for location ${locationId}...`);
       
       try {
-        // Ensure location ID is in URN format
-        const locationIdURN = ensureURN(locationId, 'Location');
+        const data = await makeBoulevardRequest(CREATE_CART_QUERY, { locationId });
         
-        const startOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
-        
-        const data = await queryBoulevard(APPOINTMENTS_QUERY, {
-          locationId: locationIdURN,
-          after: startOfDay.toISOString(),
-          before: endOfDay.toISOString(),
-          first: 100
-        });
-        
-        if (!data.appointments || !data.appointments.edges) {
-          console.log(`⚠️ No appointments found for location ${locationId}`);
-          return [];
-        }
-        
-        const appointments = data.appointments.edges
-          .map(edge => edge.node)
-          .filter(apt => !apt.cancelled); // Filter out cancelled appointments
-        
-        console.log(`✅ Found ${appointments.length} active appointments`);
-        appointments.forEach(apt => {
-          const clientName = apt.client ? `${apt.client.firstName} ${apt.client.lastName}` : 'No Client';
-          const staffName = apt.staff ? `${apt.staff.firstName} ${apt.staff.lastName}` : 'No Staff';
-          const startTime = new Date(apt.startAt).toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit',
-            hour12: true 
-          });
-          console.log(`  - ${startTime}: ${clientName} with ${staffName}`);
-        });
-        
-        return appointments;
-        
-      } catch (error) {
-        console.error(`❌ Failed to fetch appointments for location ${locationId}:`, error);
-        return [];
-      }
-    }
-
-    // =============================================================================
-    // 5. ALTERNATIVE: TRY ROOT STAFFMEMBERS QUERY (IF IT EXISTS)
-    // =============================================================================
-
-    const STAFFMEMBERS_QUERY = `
-      query GetAllStaffMembers($first: Int!) {
-        staffMembers(first: $first) {
-          edges {
-            node {
-              id
-              firstName
-              lastName
-              email
-              active
-              role {
-                id
-                name
-              }
-              locations {
-                id
-                name
-              }
-            }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }
-    `;
-
-    async function fetchAllStaffAlternative() {
-      console.log('🔍 Trying alternative staffMembers query...');
-      
-      try {
-        const data = await queryBoulevard(STAFFMEMBERS_QUERY, { first: 100 });
-        
-        if (!data.staffMembers || !data.staffMembers.edges) {
-          console.log('⚠️ No staffMembers data returned (query may not exist)');
+        if (!data.createCart || !data.createCart.cart) {
+          console.log(`⚠️ Failed to create cart for location ${locationId}`);
           return null;
         }
         
-        const staff = data.staffMembers.edges
-          .map(edge => edge.node)
-          .filter(staff => staff.active);
+        const cart = data.createCart.cart;
+        console.log(`✅ Created cart ${cart.id} for location`);
         
-        console.log(`✅ Found ${staff.length} active staff members via staffMembers query`);
-        return staff;
+        // Store cart for later use
+        activeCarts.set(locationId, cart.id);
+        
+        return cart;
         
       } catch (error) {
-        console.error('❌ staffMembers query failed (probably not available):', error);
+        console.error(`❌ Failed to create cart for location ${locationId}:`, error);
         return null;
       }
     }
 
     // =============================================================================
-    // 6. COMPLETE DASHBOARD DATA LOADING - CORRECTED
+    // 3. GET STAFF VARIANTS FOR A SERVICE (CLIENT API)
+    // =============================================================================
+
+    const GET_STAFF_VARIANTS_QUERY = `
+      query GetStaffVariants($cartId: ID!, $itemId: ID!) {
+        cart(id: $cartId) {
+          id
+          availableItem(id: $itemId) {
+            id
+            name
+            description
+            ... on CartAvailableBookableItem {
+              listPrice
+              listDuration
+              staffVariants {
+                id
+                price
+                duration
+                staff {
+                  id
+                  firstName
+                  lastName
+                  bio
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    async function getStaffVariantsForService(cartId, itemId) {
+      console.log(`👥 Getting staff variants for service ${itemId} in cart ${cartId}...`);
+      
+      try {
+        const data = await makeBoulevardRequest(GET_STAFF_VARIANTS_QUERY, { cartId, itemId });
+        
+        if (!data.cart || !data.cart.availableItem) {
+          console.log(`⚠️ No staff variants found for service ${itemId}`);
+          return [];
+        }
+        
+        const item = data.cart.availableItem;
+        const staffVariants = item.staffVariants || [];
+        
+        console.log(`✅ Found ${staffVariants.length} staff variants for ${item.name}`);
+        staffVariants.forEach(variant => {
+          const staffName = variant.staff ? `${variant.staff.firstName} ${variant.staff.lastName}` : 'Unknown Staff';
+          console.log(`  - ${staffName}: $${variant.price} (${variant.duration}min)`);
+        });
+        
+        return staffVariants.map(variant => ({
+          ...variant,
+          serviceName: item.name,
+          serviceId: item.id
+        }));
+        
+      } catch (error) {
+        console.error(`❌ Failed to get staff variants for service ${itemId}:`, error);
+        return [];
+      }
+    }
+
+    // =============================================================================
+    // 4. GET AVAILABLE DATES FOR CART (CLIENT API)
+    // =============================================================================
+
+    const GET_AVAILABLE_DATES_QUERY = `
+      query GetAvailableDates($cartId: ID!, $searchRangeLower: String!, $searchRangeUpper: String!, $tz: String!) {
+        cartBookableDates(
+          id: $cartId,
+          searchRangeLower: $searchRangeLower,
+          searchRangeUpper: $searchRangeUpper,
+          tz: $tz
+        ) {
+          date
+        }
+      }
+    `;
+
+    async function getAvailableDatesForCart(cartId, startDate, endDate, timezone = 'America/New_York') {
+      console.log(`📅 Getting available dates for cart ${cartId}...`);
+      
+      try {
+        const data = await makeBoulevardRequest(GET_AVAILABLE_DATES_QUERY, {
+          cartId,
+          searchRangeLower: startDate,
+          searchRangeUpper: endDate,
+          tz: timezone
+        });
+        
+        const availableDates = data.cartBookableDates || [];
+        
+        console.log(`✅ Found ${availableDates.length} available dates`);
+        
+        return availableDates;
+        
+      } catch (error) {
+        console.error(`❌ Failed to get available dates for cart ${cartId}:`, error);
+        return [];
+      }
+    }
+
+    // =============================================================================
+    // 5. GET AVAILABLE TIMES FOR A SPECIFIC DATE (CLIENT API)
+    // =============================================================================
+
+    const GET_AVAILABLE_TIMES_QUERY = `
+      query GetAvailableTimes($cartId: ID!, $searchDate: String!, $tz: String!) {
+        cartBookableTimes(
+          id: $cartId,
+          searchDate: $searchDate,
+          tz: $tz
+        ) {
+          id
+          score
+          startTime
+        }
+      }
+    `;
+
+    async function getAvailableTimesForDate(cartId, date, timezone = 'America/New_York') {
+      console.log(`⏰ Getting available times for cart ${cartId} on ${date}...`);
+      
+      try {
+        const data = await makeBoulevardRequest(GET_AVAILABLE_TIMES_QUERY, {
+          cartId,
+          searchDate: date,
+          tz: timezone
+        });
+        
+        const availableTimes = data.cartBookableTimes || [];
+        
+        console.log(`✅ Found ${availableTimes.length} available times for ${date}`);
+        
+        return availableTimes;
+        
+      } catch (error) {
+        console.error(`❌ Failed to get available times for cart ${cartId} on ${date}:`, error);
+        return [];
+      }
+    }
+
+    // =============================================================================
+    // 6. ADD SERVICE TO CART (REQUIRED FOR AVAILABILITY CHECKING)
+    // =============================================================================
+
+    const ADD_SERVICE_TO_CART_QUERY = `
+      mutation AddServiceToCart($cartId: ID!, $itemId: ID!, $staffVariantId: ID!) {
+        addCartSelectedBookableItem(input: {
+          id: $cartId,
+          itemId: $itemId,
+          itemStaffVariantId: $staffVariantId
+        }) {
+          cart { 
+            id 
+            selectedItems {
+              id
+              item {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    async function addServiceToCart(cartId, itemId, staffVariantId) {
+      console.log(`➕ Adding service ${itemId} (staff variant ${staffVariantId}) to cart ${cartId}...`);
+      
+      try {
+        const data = await makeBoulevardRequest(ADD_SERVICE_TO_CART_QUERY, {
+          cartId,
+          itemId,
+          staffVariantId
+        });
+        
+        if (!data.addCartSelectedBookableItem || !data.addCartSelectedBookableItem.cart) {
+          console.log(`⚠️ Failed to add service to cart`);
+          return false;
+        }
+        
+        console.log(`✅ Added service to cart successfully`);
+        return true;
+        
+      } catch (error) {
+        console.error(`❌ Failed to add service to cart:`, error);
+        return false;
+      }
+    }
+
+    // =============================================================================
+    // 7. COMPREHENSIVE DATA LOADING FOR DASHBOARD
     // =============================================================================
 
     async function loadDashboardData(selectedDate) {
-      console.log(`🔄 Loading complete dashboard data for ${selectedDate.toISOString().split('T')[0]}...`);
+      console.log(`🔄 Loading dashboard data for ${selectedDate.toISOString().split('T')[0]}...`);
       
       try {
-        // Step 1: Load all locations first
-        const allLocations = await fetchAllLocations();
+        // Step 1: Get all business locations
+        const locations = await fetchBusinessLocations();
         
-        if (allLocations.length === 0) {
-          console.error('❌ No locations found - check your Boulevard account setup');
-          return { error: 'No locations found in Boulevard account' };
-        }
-        
-        // Step 2: Try to load staff using alternative method first, then fallback
-        let allStaff = await fetchAllStaffAlternative();
-        
-        if (!allStaff) {
-          console.log('📋 Falling back to location-based staff fetching...');
-          allStaff = await fetchAllStaff(allLocations);
-        }
-        
-        if (allStaff.length === 0) {
-          console.error('❌ No staff found - check your Boulevard account setup');
-          return { error: 'No staff found in Boulevard account' };
+        if (locations.length === 0) {
+          return { error: 'No business locations found' };
         }
         
         // Filter locations if needed
-        const locationsToShow = selectedLocation === 'all' ? 
-          allLocations : 
-          allLocations.filter(loc => loc.name === selectedLocation);
+        const locationsToProcess = selectedLocation === 'all' ? 
+          locations : 
+          locations.filter(loc => loc.name === selectedLocation);
         
-        // Step 3: For each location, load shifts and appointments
+        // Step 2: For each location, create cart and discover services/staff
         const locationData = await Promise.all(
-          locationsToShow.map(async location => {
+          locationsToProcess.map(async location => {
             console.log(`🏢 Processing location: ${location.name}...`);
             
-            const [shifts, appointments] = await Promise.all([
-              fetchShifts(location.id, selectedDate),
-              fetchAppointments(location.id, selectedDate)
-            ]);
+            // Create cart for this location
+            const cart = await createCartForLocation(location.id);
             
-            // Step 4: Find staff working at this location
-            const locationStaff = allStaff.filter(staff => 
-              staff.locations && staff.locations.some(loc => 
-                loc.id === location.id || 
-                ensureURN(loc.id, 'Location') === ensureURN(location.id, 'Location')
-              )
-            );
-            
-            // Step 5: Map shifts to staff
-            const staffWithShifts = locationStaff.map(staff => {
-              const staffShift = shifts.find(shift => 
-                shift.staffId === staff.id || 
-                ensureURN(shift.staffId, 'Staff') === ensureURN(staff.id, 'Staff')
-              );
+            if (!cart) {
               return {
-                ...staff,
-                shift: staffShift || null,
-                isWorking: !!staffShift && staffShift.available
+                location,
+                services: [],
+                error: 'Failed to create cart for location'
               };
-            });
+            }
             
-            // Filter staff if needed
-            const staffToShow = selectedStaff === 'all' ? 
-              staffWithShifts : 
-              staffWithShifts.filter(staff => staff.id === selectedStaff);
+            // Get all available services from cart
+            const services = [];
+            const allStaffVariants = [];
             
-            console.log(`✅ ${location.name}: ${staffToShow.length} staff, ${shifts.length} shifts, ${appointments.length} appointments`);
+            if (cart.availableCategories) {
+              for (const category of cart.availableCategories) {
+                for (const item of category.availableItems) {
+                  // Get staff variants for this service
+                  const staffVariants = await getStaffVariantsForService(cart.id, item.id);
+                  
+                  if (staffVariants.length > 0) {
+                    // For each staff variant, get availability for the selected date
+                    const staffWithAvailability = await Promise.all(
+                      staffVariants.map(async variant => {
+                        // Add this service/staff to cart to check availability
+                        const added = await addServiceToCart(cart.id, item.id, variant.id);
+                        
+                        if (added) {
+                          // Get available times for selected date
+                          const dateStr = selectedDate.toISOString().split('T')[0];
+                          const availableTimes = await getAvailableTimesForDate(cart.id, dateStr, location.tz);
+                          
+                          return {
+                            ...variant,
+                            availableTimes,
+                            hasAvailability: availableTimes.length > 0
+                          };
+                        }
+                        
+                        return {
+                          ...variant,
+                          availableTimes: [],
+                          hasAvailability: false
+                        };
+                      })
+                    );
+                    
+                    services.push({
+                      id: item.id,
+                      name: item.name,
+                      description: item.description,
+                      category: category.name,
+                      staffVariants: staffWithAvailability
+                    });
+                    
+                    allStaffVariants.push(...staffWithAvailability);
+                  }
+                }
+              }
+            }
+            
+            console.log(`✅ ${location.name}: ${services.length} services, ${allStaffVariants.length} total staff variants`);
             
             return {
-              location: location,
-              staff: staffToShow,
-              shifts: shifts,
-              appointments: appointments
+              location,
+              services,
+              cart,
+              allStaffVariants
             };
           })
         );
         
+        // Step 3: Aggregate all services and staff for filters
+        const allServices = [];
+        const allStaff = new Map();
+        
+        locationData.forEach(locData => {
+          if (locData.services) {
+            locData.services.forEach(service => {
+              // Add to all services if not already present
+              if (!allServices.find(s => s.name === service.name)) {
+                allServices.push(service);
+              }
+              
+              // Add staff to global staff map
+              service.staffVariants.forEach(variant => {
+                if (variant.staff) {
+                  const staffKey = variant.staff.id;
+                  if (!allStaff.has(staffKey)) {
+                    allStaff.set(staffKey, {
+                      ...variant.staff,
+                      services: [service.name],
+                      locations: [locData.location.name]
+                    });
+                  } else {
+                    const existingStaff = allStaff.get(staffKey);
+                    if (!existingStaff.services.includes(service.name)) {
+                      existingStaff.services.push(service.name);
+                    }
+                    if (!existingStaff.locations.includes(locData.location.name)) {
+                      existingStaff.locations.push(locData.location.name);
+                    }
+                  }
+                }
+              });
+            });
+          }
+        });
+        
         console.log('✅ Dashboard data loaded successfully');
         
         return {
-          allStaff: allStaff,
-          allLocations: allLocations,
-          locationData: locationData
+          locations,
+          allServices,
+          allStaff: Array.from(allStaff.values()),
+          locationData
         };
         
       } catch (error) {
@@ -1000,48 +1003,53 @@
     }
 
     // =============================================================================
-    // 7. TEST FUNCTION TO DEBUG API ISSUES
+    // 8. TEST FUNCTION FOR CLIENT API
     // =============================================================================
 
-    async function testBoulevardAPI() {
-      console.log('🧪 Testing Boulevard API endpoints...');
+    async function testClientAPI() {
+      console.log('🧪 Testing Boulevard Client API endpoints...');
       
       try {
-        // Test 1: Locations
-        console.log('Test 1: Fetching locations...');
-        const locations = await fetchAllLocations();
+        // Test 1: Business locations
+        console.log('Test 1: Fetching business locations...');
+        const locations = await fetchBusinessLocations();
         console.log(`✅ Locations test: ${locations.length} found`);
         
         if (locations.length > 0) {
           const firstLocation = locations[0];
           console.log(`First location: ${firstLocation.name} (${firstLocation.id})`);
           
-          // Test 2: Staff for first location
-          console.log('Test 2: Fetching staff for first location...');
-          const staff = await fetchAllStaff([firstLocation]);
-          console.log(`✅ Staff test: ${staff.length} found`);
+          // Test 2: Create cart for first location
+          console.log('Test 2: Creating cart for first location...');
+          const cart = await createCartForLocation(firstLocation.id);
           
-          // Test 3: Shifts for first location
-          console.log('Test 3: Fetching shifts for first location...');
-          const shifts = await fetchShifts(firstLocation.id, new Date());
-          console.log(`✅ Shifts test: ${shifts.length} found`);
-          
-          // Test 4: Appointments for first location
-          console.log('Test 4: Fetching appointments for first location...');
-          const appointments = await fetchAppointments(firstLocation.id, new Date());
-          console.log(`✅ Appointments test: ${appointments.length} found`);
+          if (cart) {
+            console.log(`✅ Cart created: ${cart.id}`);
+            console.log(`Available categories: ${cart.availableCategories?.length || 0}`);
+            
+            // Test 3: Get staff variants for first service
+            if (cart.availableCategories && cart.availableCategories.length > 0) {
+              const firstCategory = cart.availableCategories[0];
+              if (firstCategory.availableItems && firstCategory.availableItems.length > 0) {
+                const firstItem = firstCategory.availableItems[0];
+                console.log('Test 3: Getting staff variants for first service...');
+                const staffVariants = await getStaffVariantsForService(cart.id, firstItem.id);
+                console.log(`✅ Staff variants test: ${staffVariants.length} found`);
+              }
+            }
+          }
         }
         
-        console.log('🎉 All API tests completed successfully!');
+        console.log('🎉 All Client API tests completed successfully!');
         
       } catch (error) {
-        console.error('💥 API test failed:', error);
+        console.error('💥 Client API test failed:', error);
         throw error;
       }
     }
 
     // =============================================================================
-    // 8. RENDER DASHBOARD WITH REAL DATA
+    // 9. RENDER DASHBOARD WITH CLIENT API DATA
     // =============================================================================
 
     function renderDashboard(data) {
@@ -1052,6 +1060,7 @@
           <div class="error-state">
             <h3>Error Loading Data</h3>
             <p>${data.error}</p>
+            <p>Please check your Boulevard configuration and API key.</p>
             <button onclick="loadAndRenderDashboard()">Retry</button>
           </div>
         `;
@@ -1062,8 +1071,8 @@
         container.innerHTML = `
           <div class="no-data-state">
             <h3>No Data Found</h3>
-            <p>No locations or staff found in your Boulevard account.</p>
-            <p>Please check your Boulevard setup and try again.</p>
+            <p>No locations or services found in your Boulevard business.</p>
+            <p>Please check your business setup and try again.</p>
             <button onclick="loadAndRenderDashboard()">Retry</button>
           </div>
         `;
@@ -1087,126 +1096,166 @@
       // Location header
       const header = document.createElement('div');
       header.className = 'location-header';
+      
+      const addressStr = locationInfo.location.address ? 
+        `${locationInfo.location.address.city}, ${locationInfo.location.address.state}` : 
+        'No address';
+      
       header.innerHTML = `
         <div>
           <div class="location-name">${locationInfo.location.name}</div>
-          <div class="business-hours">Business: ${locationInfo.location.businessName || 'N/A'}</div>
+          <div class="location-address">${addressStr}</div>
         </div>
         <div class="location-stats">
           <div class="stat-item">
-            <span>${locationInfo.staff.length} staff</span>
+            <span>${locationInfo.services?.length || 0} services</span>
           </div>
           <div class="stat-item">
-            <span>${locationInfo.shifts.length} shifts</span>
-          </div>
-          <div class="stat-item">
-            <span>${locationInfo.appointments.length} appointments</span>
+            <span>${locationInfo.allStaffVariants?.length || 0} staff options</span>
           </div>
         </div>
       `;
       panel.appendChild(header);
       
-      // Staff list
-      if (locationInfo.staff.length === 0) {
-        const noStaff = document.createElement('div');
-        noStaff.className = 'no-staff';
-        noStaff.textContent = 'No staff assigned to this location';
-        panel.appendChild(noStaff);
+      // Error handling for location
+      if (locationInfo.error) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-state';
+        errorDiv.innerHTML = `
+          <h3>Location Error</h3>
+          <p>${locationInfo.error}</p>
+        `;
+        panel.appendChild(errorDiv);
+        return panel;
+      }
+      
+      // Services list
+      if (!locationInfo.services || locationInfo.services.length === 0) {
+        const noServices = document.createElement('div');
+        noServices.className = 'no-data-state';
+        noServices.innerHTML = `
+          <h3>No Services Available</h3>
+          <p>No bookable services found for this location.</p>
+        `;
+        panel.appendChild(noServices);
       } else {
-        locationInfo.staff.forEach(staff => {
-          const staffSection = createStaffSection(staff, locationInfo.appointments);
-          panel.appendChild(staffSection);
+        // Filter services if needed
+        const servicesToShow = selectedService === 'all' ? 
+          locationInfo.services : 
+          locationInfo.services.filter(service => service.name === selectedService);
+        
+        servicesToShow.forEach(service => {
+          const serviceSection = createServiceSection(service);
+          panel.appendChild(serviceSection);
         });
       }
       
       return panel;
     }
 
-    function createStaffSection(staff, appointments) {
+    function createServiceSection(service) {
       const section = document.createElement('div');
-      section.className = 'staff-section';
+      section.className = 'service-section';
       
-      const shiftInfo = staff.shift ? 
-        `${staff.shift.startTime} - ${staff.shift.endTime}` : 
-        'Not scheduled';
-        
-      const workingStatus = staff.isWorking ? 'working' : 'not-working';
+      // Filter staff variants if needed
+      const staffToShow = selectedStaff === 'all' ? 
+        service.staffVariants : 
+        service.staffVariants.filter(variant => 
+          variant.staff && (variant.staff.id === selectedStaff || 
+          `${variant.staff.firstName} ${variant.staff.lastName}` === selectedStaff)
+        );
       
-      // Staff header
+      // Service header
       const header = document.createElement('div');
-      header.className = `staff-header ${workingStatus}`;
+      header.className = 'service-header';
+      header.innerHTML = `
+        <div class="service-name">${service.name}</div>
+        <div class="service-staff-count">${staffToShow.length} staff</div>
+      `;
       
-      const avatar = document.createElement('div');
-      avatar.className = 'staff-avatar';
-      avatar.textContent = `${staff.firstName.charAt(0)}${staff.lastName.charAt(0)}`;
+      // Make header clickable to expand/collapse
+      header.addEventListener('click', () => {
+        const staffVariants = section.querySelector('.staff-variants');
+        staffVariants.classList.toggle('expanded');
+      });
       
-      const staffInfo = document.createElement('div');
-      staffInfo.className = 'staff-info';
-      
-      const staffName = document.createElement('div');
-      staffName.className = 'staff-name';
-      staffName.textContent = `${staff.firstName} ${staff.lastName}`;
-      
-      const staffRole = document.createElement('div');
-      staffRole.className = 'staff-role';
-      staffRole.textContent = staff.role?.name || 'No role assigned';
-      
-      const staffShift = document.createElement('div');
-      staffShift.className = 'staff-shift';
-      staffShift.textContent = shiftInfo;
-      
-      staffInfo.appendChild(staffName);
-      staffInfo.appendChild(staffRole);
-      staffInfo.appendChild(staffShift);
-      
-      header.appendChild(avatar);
-      header.appendChild(staffInfo);
       section.appendChild(header);
       
-      // Add appointment details if staff is working
-      if (staff.isWorking) {
-        const staffAppointments = appointments.filter(apt => 
-          apt.staff && apt.staff.id === staff.id ||
-          apt.appointmentServices.some(service => 
-            service.staff && service.staff.id === staff.id
-          )
-        );
-        
-        if (staffAppointments.length > 0) {
-          const appointmentsList = document.createElement('div');
-          appointmentsList.className = 'appointments-list';
-          
-          staffAppointments.forEach(apt => {
-            const startTime = new Date(apt.startAt).toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true
-            });
-            
-            const clientName = apt.client ? 
-              `${apt.client.firstName} ${apt.client.lastName}` : 
-              'Client';
-              
-            const appointmentItem = document.createElement('div');
-            appointmentItem.className = 'appointment-item';
-            appointmentItem.textContent = `${startTime} - ${clientName}`;
-            appointmentsList.appendChild(appointmentItem);
-          });
-          
-          section.appendChild(appointmentsList);
-        } else {
-          const noAppointments = document.createElement('div');
-          noAppointments.className = 'appointments-list';
-          noAppointments.innerHTML = '<div class="appointment-item">No appointments scheduled</div>';
-          section.appendChild(noAppointments);
-        }
+      // Staff variants container
+      const staffVariantsContainer = document.createElement('div');
+      staffVariantsContainer.className = 'staff-variants';
+      
+      if (staffToShow.length === 0) {
+        staffVariantsContainer.innerHTML = '<div class="availability-info">No staff available for this service</div>';
+      } else {
+        staffToShow.forEach(variant => {
+          const staffDiv = createStaffVariantDiv(variant);
+          staffVariantsContainer.appendChild(staffDiv);
+        });
       }
+      
+      section.appendChild(staffVariantsContainer);
       
       return section;
     }
 
+    function createStaffVariantDiv(variant) {
+      const div = document.createElement('div');
+      div.className = 'staff-variant';
+      
+      const staffName = variant.staff ? 
+        `${variant.staff.firstName} ${variant.staff.lastName}` : 
+        'Unknown Staff';
+      
+      const staffInfo = document.createElement('div');
+      staffInfo.className = 'staff-info';
+      staffInfo.innerHTML = `
+        <div class="staff-name">${staffName}</div>
+        <div class="staff-price">$${variant.price} (${variant.duration}min)</div>
+      `;
+      div.appendChild(staffInfo);
+      
+      // Availability info
+      const availabilityInfo = document.createElement('div');
+      availabilityInfo.className = 'availability-info';
+      
+      if (variant.hasAvailability && variant.availableTimes.length > 0) {
+        availabilityInfo.textContent = `${variant.availableTimes.length} available times`;
+        
+        // Show first few time slots
+        const timesContainer = document.createElement('div');
+        timesContainer.className = 'availability-times';
+        
+        variant.availableTimes.slice(0, 6).forEach(time => {
+          const timeSlot = document.createElement('span');
+          timeSlot.className = 'time-slot';
+          timeSlot.textContent = new Date(`2000-01-01T${time.startTime}`).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          });
+          timesContainer.appendChild(timeSlot);
+        });
+        
+        if (variant.availableTimes.length > 6) {
+          const moreSlot = document.createElement('span');
+          moreSlot.className = 'time-slot';
+          moreSlot.textContent = `+${variant.availableTimes.length - 6} more`;
+          timesContainer.appendChild(moreSlot);
+        }
+        
+        div.appendChild(timesContainer);
+      } else {
+        availabilityInfo.textContent = 'No availability for selected date';
+      }
+      
+      div.appendChild(availabilityInfo);
+      
+      return div;
+    }
+
     // =============================================================================
-    // 9. POPULATE FILTER DROPDOWNS
+    // 10. POPULATE FILTER DROPDOWNS
     // =============================================================================
 
     function populateLocationFilter(locations) {
@@ -1222,6 +1271,19 @@
       });
     }
 
+    function populateServiceFilter(services) {
+      const dropdown = document.getElementById('serviceDropdown');
+      dropdown.innerHTML = '<div class="dropdown-item" data-service="all">All Services</div>';
+      
+      services.forEach(service => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        item.setAttribute('data-service', service.name);
+        item.textContent = service.name;
+        dropdown.appendChild(item);
+      });
+    }
+
     function populateStaffFilter(staff) {
       const dropdown = document.getElementById('staffDropdown');
       dropdown.innerHTML = '<div class="dropdown-item" data-staff="all">All Staff</div>';
@@ -1230,13 +1292,13 @@
         const item = document.createElement('div');
         item.className = 'dropdown-item';
         item.setAttribute('data-staff', member.id);
-        item.textContent = `${member.firstName} ${member.lastName} (${member.locations.map(l => l.name).join(', ')})`;
+        item.textContent = `${member.firstName} ${member.lastName} (${member.services.join(', ')})`;
         dropdown.appendChild(item);
       });
     }
 
     // =============================================================================
-    // 10. UPDATE DATE DISPLAY
+    // 11. UPDATE DATE DISPLAY
     // =============================================================================
 
     function updateDateDisplay() {
@@ -1251,22 +1313,23 @@
     }
 
     // =============================================================================
-    // 11. MAIN INITIALIZATION FUNCTION
+    // 12. MAIN INITIALIZATION FUNCTION
     // =============================================================================
 
     async function loadAndRenderDashboard() {
-      console.log('🚀 Initializing Boulevard Dashboard...');
+      console.log('🚀 Initializing Boulevard Client API Dashboard...');
       
       // Show loading state
       const container = document.getElementById('dashboard-container');
-      container.innerHTML = '<div class="loading-state">Loading real Boulevard data...</div>';
+      container.innerHTML = '<div class="loading-state">Loading service availability from Boulevard Client API...</div>';
       
       // Load and render data
       dashboardData = await loadDashboardData(currentDate);
       
       // Populate filters if we have data
       if (dashboardData && !dashboardData.error) {
-        populateLocationFilter(dashboardData.allLocations);
+        populateLocationFilter(dashboardData.locations);
+        populateServiceFilter(dashboardData.allServices);
         populateStaffFilter(dashboardData.allStaff);
       }
       
@@ -1274,11 +1337,24 @@
     }
 
     // =============================================================================
-    // 12. EVENT LISTENERS
+    // 13. EVENT LISTENERS
     // =============================================================================
 
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('📱 Page loaded, starting Boulevard dashboard...');
+      console.log('📱 Page loaded, starting Boulevard Client API dashboard...');
+      
+      // Check configuration
+      if (BOULEVARD_CONFIG.businessId.includes('YOUR_') || BOULEVARD_CONFIG.apiKey.includes('YOUR_')) {
+        const container = document.getElementById('dashboard-container');
+        container.innerHTML = `
+          <div class="error-state">
+            <h3>Configuration Required</h3>
+            <p>Please update the BOULEVARD_CONFIG object with your actual business ID and API key.</p>
+            <p>Find the configuration at the top of the JavaScript section.</p>
+          </div>
+        `;
+        return;
+      }
       
       // Initialize date display
       updateDateDisplay();
@@ -1314,6 +1390,21 @@
         }
       });
       
+      // Service filter
+      document.getElementById('serviceFilter').addEventListener('click', () => {
+        const dropdown = document.getElementById('serviceDropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      });
+      
+      document.getElementById('serviceDropdown').addEventListener('click', (e) => {
+        if (e.target.classList.contains('dropdown-item')) {
+          selectedService = e.target.getAttribute('data-service');
+          document.getElementById('serviceFilter').textContent = e.target.textContent + ' ▼';
+          document.getElementById('serviceDropdown').style.display = 'none';
+          loadAndRenderDashboard();
+        }
+      });
+      
       // Staff filter
       document.getElementById('staffFilter').addEventListener('click', () => {
         const dropdown = document.getElementById('staffDropdown');
@@ -1331,12 +1422,14 @@
       
       // Refresh button
       document.getElementById('refreshData').addEventListener('click', () => {
+        // Clear cached carts
+        activeCarts.clear();
         loadAndRenderDashboard();
       });
       
       // Test API button
       document.getElementById('testAPI').addEventListener('click', () => {
-        testBoulevardAPI();
+        testClientAPI();
       });
       
       // Close dropdowns when clicking outside
@@ -1350,20 +1443,21 @@
     });
 
     // Export functions for manual testing
-    window.boulevardAPI = {
-      fetchAllLocations,
-      fetchAllStaff,
-      fetchAllStaffAlternative,
-      fetchShifts,
-      fetchAppointments,
+    window.boulevardClientAPI = {
+      fetchBusinessLocations,
+      createCartForLocation,
+      getStaffVariantsForService,
+      getAvailableDatesForCart,
+      getAvailableTimesForDate,
+      addServiceToCart,
       loadDashboardData,
-      testBoulevardAPI,
-      ensureURN,
-      queryBoulevard
+      testClientAPI,
+      makeBoulevardRequest
     };
 
-    console.log('✅ Boulevard API functions loaded with URN support');
-    console.log('🧪 Run window.boulevardAPI.testBoulevardAPI() to test your API connection');
+    console.log('✅ Boulevard Client API dashboard loaded');
+    console.log('🧪 Run window.boulevardClientAPI.testClientAPI() to test your API connection');
+    console.log('⚠️ Remember to update BOULEVARD_CONFIG with your actual business ID and API key');
   </script>
 </body>
 </html>
