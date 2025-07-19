@@ -1,1209 +1,557 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Get Plump - Global Appointment Dashboard</title>
-  
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f8f9fa;
-      min-height: 100vh;
-    }
-    
-    .dashboard-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    .dashboard-header {
-      background: #fff;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    
-    .dashboard-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: #1a1a1a;
-    }
-    
-    .date-navigation {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    
-    .nav-button {
-      background: #007AFF;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    
-    .nav-button:hover {
-      background: #0056d6;
-      transform: translateY(-1px);
-    }
-    
-    .current-date {
-      font-size: 18px;
-      font-weight: 600;
-      color: #1a1a1a;
-      min-width: 200px;
-      text-align: center;
-    }
-    
-    .filters-container {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-    
-    .filter-dropdown {
-      background: #fff;
-      border: 2px solid #e5e5e7;
-      border-radius: 8px;
-      padding: 10px 16px;
-      cursor: pointer;
-      min-width: 160px;
-      font-weight: 500;
-      position: relative;
-    }
-    
-    .filter-dropdown:hover {
-      border-color: #007AFF;
-    }
-    
-    .dropdown-content {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #fff;
-      border: 2px solid #e5e5e7;
-      border-radius: 8px;
-      margin-top: 4px;
-      max-height: 300px;
-      overflow-y: auto;
-      z-index: 1000;
-      display: none;
-    }
-    
-    .dropdown-item {
-      padding: 12px 16px;
-      cursor: pointer;
-      border-bottom: 1px solid #f5f5f5;
-    }
-    
-    .dropdown-item:hover {
-      background: #f8f9fa;
-    }
-    
-    .refresh-button {
-      background: #007AFF;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    
-    .refresh-button:hover {
-      background: #0056d6;
-    }
-    
-    .legend {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 16px;
-      font-size: 14px;
-    }
-    
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-    
-    .status-dot.available { background: #51cf66; }
-    .status-dot.booked { background: #ff6b6b; }
-    .status-dot.off-shift { background: #868e96; }
-    
-    .dashboard-content {
-      background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .locations-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 1px;
-      background: #e5e5e7;
-    }
-    
-    .location-panel {
-      background: #fff;
-      padding: 24px;
-      min-height: 600px;
-    }
-    
-    .location-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid #f5f5f5;
-    }
-    
-    .location-name {
-      font-size: 20px;
-      font-weight: 700;
-      color: #1a1a1a;
-    }
-    
-    .location-stats {
-      display: flex;
-      gap: 16px;
-      font-size: 14px;
-      color: #666;
-    }
-    
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-    
-    .business-hours {
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 16px;
-    }
-    
-    .staff-section {
-      margin-bottom: 20px;
-    }
-    
-    .staff-header {
-      font-size: 16px;
-      font-weight: 600;
-      color: #1a1a1a;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .staff-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #e5e5e7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: #666;
-    }
-    
-    .staff-info {
-      flex: 1;
-    }
-    
-    .staff-name {
-      font-weight: 600;
-    }
-    
-    .staff-shift {
-      font-size: 12px;
-      color: #666;
-    }
-    
-    .time-slots {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 6px;
-    }
-    
-    .time-slot {
-      padding: 6px 8px;
-      border-radius: 6px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid transparent;
-      position: relative;
-    }
-    
-    .time-slot.available {
-      background: #e8f5e8;
-      color: #2e7d32;
-      border-color: #c8e6c9;
-    }
-    
-    .time-slot.booked {
-      background: #ffebee;
-      color: #d32f2f;
-      border-color: #ffcdd2;
-    }
-    
-    .time-slot.off-shift {
-      background: #f5f5f5;
-      color: #999;
-      border-color: #e0e0e0;
-      cursor: not-allowed;
-    }
-    
-    .time-slot:hover:not(.off-shift) {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .appointment-tooltip {
-      position: absolute;
-      background: #1a1a1a;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 11px;
-      white-space: nowrap;
-      z-index: 1000;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-bottom: 4px;
-    }
-    
-    .time-slot:hover .appointment-tooltip {
-      opacity: 1;
-    }
-    
-    .loading-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 400px;
-      color: #666;
-      font-size: 18px;
-    }
-    
-    .error-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 400px;
-      color: #d32f2f;
-      text-align: center;
-    }
-    
-    /* Mobile Responsiveness */
-    @media (max-width: 768px) {
-      .dashboard-container {
-        padding: 10px;
-      }
-      
-      .header-top {
-        flex-direction: column;
-        gap: 16px;
-        align-items: stretch;
-      }
-      
-      .date-navigation {
-        justify-content: center;
-      }
-      
-      .filters-container {
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      
-      .locations-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .time-slots {
-        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-        gap: 4px;
-      }
-      
-      .time-slot {
-        padding: 4px 6px;
-        font-size: 11px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="dashboard-container">
-    <div class="dashboard-header">
-      <div class="header-top">
-        <h1 class="dashboard-title">Get Plump - Global Appointment Dashboard</h1>
-        
-        <div class="date-navigation">
-          <button class="nav-button" id="prevDay">← Previous</button>
-          <div class="current-date" id="currentDate">Today</div>
-          <button class="nav-button" id="nextDay">Next →</button>
-        </div>
-      </div>
-      
-      <div class="filters-container">
-        <div class="filter-dropdown" id="locationFilter">
-          All Locations ▼
-          <div class="dropdown-content" id="locationDropdown">
-            <div class="dropdown-item" data-location="all">All Locations</div>
-          </div>
-        </div>
-        
-        <div class="filter-dropdown" id="staffFilter">
-          All Staff ▼
-          <div class="dropdown-content" id="staffDropdown">
-            <div class="dropdown-item" data-staff="all">All Staff</div>
-          </div>
-        </div>
-        
-        <button class="refresh-button" id="refreshData">Refresh</button>
-      </div>
-      
-      <div class="legend">
-        <div class="legend-item">
-          <div class="legend-dot status-dot available"></div>
-          <span>Available</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot status-dot booked"></div>
-          <span>Booked</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot status-dot off-shift"></div>
-          <span>Off Shift</span>
-        </div>
-      </div>
-    </div>
-    
-    <div class="dashboard-content">
-      <div id="dashboardBody" class="locations-grid">
-        <div class="loading-state">
-          Loading appointment data...
-        </div>
-      </div>
-    </div>
-  </div>
+// =============================================================================
+// BOULEVARD ADMIN API QUERIES - REAL DATA IMPLEMENTATION
+// =============================================================================
 
-  <script>
-    // Boulevard Admin API Configuration
-    const BOULEVARD_CONFIG = {
-      businessId: 'f6a06736-1132-4365-b79a-a69c648a746a',
-      apiKey: '93ca3f15-6f0e-491d-840b-681a0fef80ed',
-      apiUrl: 'https://dashboard.boulevard.io/api/2020-01/admin'
-    };
-    
-    const LOCATIONS_DATA = {
-      'West Village': { locationId: 'ffaaff3c-d5ba-408e-ba3b-455554b77116' },
-      'SoHo': { locationId: '89763e68-2454-429c-ae9c-c1b4d91e7b81' },
-      'Tribeca': { locationId: '43dfb866-a872-4f01-9491-6c6584e3c3e7' },
-      'Williamsburg': { locationId: '93566b17-c023-4fe1-9a84-462f143bd024' },
-      'Hoboken': { locationId: 'a885e859-21ef-43c7-8a63-bb242db98de2' },
-      'Uptown': { locationId: 'b146c47b-6de8-475a-8ebd-8a1d2b36546d' },
-      'Miami': { locationId: '1cbb848e-138b-4142-bc3d-b9f4ea9a42db' }
-    };
-    
-    // Global State
-    let currentDate = new Date();
-    let selectedLocation = 'all';
-    let selectedStaff = 'all';
-    let allStaff = [];
-    let allLocations = [];
-    let dashboardData = {};
-    
-    // Generate Admin API authentication token (simplified - you may need full HMAC)
-    function generateAdminAuthToken() {
-      return btoa(BOULEVARD_CONFIG.apiKey + ':');
-    }
-    
-    // Boulevard Admin API Helper
-    function makeBoulevardAdminRequest(query, variables = {}) {
-      console.log('🔥 Admin API Request:', query.substring(0, 100) + '...');
-      
-      return fetch(BOULEVARD_CONFIG.apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Basic ' + generateAdminAuthToken(),
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          query: query,
-          variables: variables
-        })
-      })
-      .then(response => {
-        console.log('🔥 Admin API Response Status:', response.status);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('🔥 Admin API Response:', data);
-        if (data.errors && data.errors.length > 0) {
-          console.error('🔥 Admin API GraphQL errors:', data.errors);
-          throw new Error(`Admin API Error: ${data.errors[0].message}`);
-        }
-        return data.data;
-      })
-      .catch(error => {
-        console.error('🔥 Admin API request failed:', error);
-        throw error;
-      });
-    }
-    
-    // Load all staff using Admin API
-    async function loadAllStaff() {
-      console.log('📋 Loading all staff via Admin API...');
-      
-      try {
-        const query = `
-          query GetAllStaff($first: Int!) {
-            staff(first: $first) {
-              edges {
-                node {
-                  id
-                  firstName
-                  lastName
-                  email
-                  avatar
-                  active
-                  role {
-                    id
-                    name
-                  }
-                  locations {
-                    id
-                    name
-                  }
-                }
-              }
-            }
+// API Helper Function
+async function queryBoulevard(query, variables = {}) {
+  const response = await fetch('/api/blvd', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: query,
+      variables: variables
+    })
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`);
+  }
+  
+  const data = await response.json();
+  
+  if (data.errors && data.errors.length > 0) {
+    console.error('GraphQL errors:', data.errors);
+    throw new Error(`GraphQL Error: ${data.errors[0].message}`);
+  }
+  
+  return data.data;
+}
+
+// =============================================================================
+// 1. FETCH ALL REAL STAFF WITH LOCATIONS
+// =============================================================================
+
+const STAFF_QUERY = `
+  query GetAllStaff($first: Int!) {
+    staff(first: $first) {
+      edges {
+        node {
+          id
+          firstName
+          lastName
+          email
+          active
+          role {
+            id
+            name
           }
-        `;
-        
-        const data = await makeBoulevardAdminRequest(query, { first: 100 });
-        
-        if (data.staff && data.staff.edges) {
-          allStaff = data.staff.edges.map(edge => {
-            const staff = edge.node;
-            return {
-              ...staff,
-              displayName: `${staff.firstName} ${staff.lastName}`,
-              locationNames: staff.locations ? staff.locations.map(loc => {
-                // Map location IDs back to our location names
-                const locationName = Object.keys(LOCATIONS_DATA).find(name => 
-                  LOCATIONS_DATA[name].locationId === loc.id.replace('urn:blvd:Location:', '') ||
-                  LOCATIONS_DATA[name].locationId === loc.id
-                );
-                return locationName || loc.name;
-              }).filter(Boolean) : []
-            };
-          });
-          
-          console.log('✅ Loaded staff:', allStaff.length, 'staff members');
-          populateStaffFilter();
-        }
-        
-      } catch (error) {
-        console.error('❌ Failed to load staff:', error);
-        // Use mock data as fallback
-        allStaff = [
-          { id: 'staff1', firstName: 'Sarah', lastName: 'Johnson', displayName: 'Sarah Johnson', role: { name: 'Senior Injector' }, locationNames: ['West Village', 'SoHo'] },
-          { id: 'staff2', firstName: 'Michael', lastName: 'Chen', displayName: 'Michael Chen', role: { name: 'Lead Aesthetician' }, locationNames: ['Tribeca', 'Williamsburg'] },
-          { id: 'staff3', firstName: 'Emily', lastName: 'Rodriguez', displayName: 'Emily Rodriguez', role: { name: 'Injector' }, locationNames: ['Hoboken', 'Uptown'] },
-          { id: 'staff4', firstName: 'David', lastName: 'Thompson', displayName: 'David Thompson', role: { name: 'Medical Director' }, locationNames: ['Miami'] }
-        ];
-        populateStaffFilter();
-      }
-    }
-    
-    // Get staff shifts for a location and date
-    async function getStaffShifts(locationName, date) {
-      console.log(`📅 Loading shifts for ${locationName} on ${date.toISOString().split('T')[0]}...`);
-      
-      try {
-        const locationData = LOCATIONS_DATA[locationName];
-        const locationId = locationData.locationId.indexOf('urn:blvd:Location:') === 0 ? 
-          locationData.locationId : 'urn:blvd:Location:' + locationData.locationId;
-        
-        const startIso8601 = date.toISOString().split('T')[0] + 'T00:00:00Z';
-        const endIso8601 = date.toISOString().split('T')[0] + 'T23:59:59Z';
-        
-        const query = `
-          query GetStaffShifts($locationId: ID!, $startIso8601: DateTime!, $endIso8601: DateTime!, $first: Int!) {
-            shifts(
-              locationId: $locationId,
-              startIso8601: $startIso8601,
-              endIso8601: $endIso8601,
-              first: $first
-            ) {
-              edges {
-                node {
-                  id
-                  staffId
-                  locationId
-                  available
-                  clockIn
-                  clockOut
-                  day
-                  staff {
-                    id
-                    firstName
-                    lastName
-                  }
-                }
-              }
-            }
-          }
-        `;
-        
-        const data = await makeBoulevardAdminRequest(query, {
-          locationId: locationId,
-          startIso8601: startIso8601,
-          endIso8601: endIso8601,
-          first: 100
-        });
-        
-        const shifts = data.shifts ? data.shifts.edges.map(edge => edge.node) : [];
-        console.log(`✅ Found ${shifts.length} shifts for ${locationName}`);
-        return shifts;
-        
-      } catch (error) {
-        console.error(`❌ Failed to load shifts for ${locationName}:`, error);
-        return [];
-      }
-    }
-    
-    // Get appointments for a location and date
-    async function getAppointments(locationName, date) {
-      console.log(`📋 Loading appointments for ${locationName} on ${date.toISOString().split('T')[0]}...`);
-      
-      try {
-        const locationData = LOCATIONS_DATA[locationName];
-        const locationId = locationData.locationId.indexOf('urn:blvd:Location:') === 0 ? 
-          locationData.locationId : 'urn:blvd:Location:' + locationData.locationId;
-        
-        const startOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
-        
-        const query = `
-          query GetAppointments($locationId: ID!, $after: DateTime!, $before: DateTime!, $first: Int!) {
-            appointments(
-              locationId: $locationId,
-              after: $after,
-              before: $before,
-              first: $first
-            ) {
-              edges {
-                node {
-                  id
-                  startAt
-                  endAt
-                  state
-                  cancelled
-                  client {
-                    id
-                    firstName
-                    lastName
-                  }
-                  staff {
-                    id
-                    firstName
-                    lastName
-                  }
-                  appointmentServices {
-                    id
-                    startAt
-                    endAt
-                    duration
-                    service {
-                      name
-                      category {
-                        name
-                      }
-                    }
-                    staff {
-                      id
-                      firstName
-                      lastName
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `;
-        
-        const data = await makeBoulevardAdminRequest(query, {
-          locationId: locationId,
-          after: startOfDay.toISOString(),
-          before: endOfDay.toISOString(),
-          first: 100
-        });
-        
-        const appointments = data.appointments ? data.appointments.edges.map(edge => edge.node) : [];
-        console.log(`✅ Found ${appointments.length} appointments for ${locationName}`);
-        return appointments.filter(apt => !apt.cancelled); // Filter out cancelled appointments
-        
-      } catch (error) {
-        console.error(`❌ Failed to load appointments for ${locationName}:`, error);
-        return [];
-      }
-    }
-    
-    // Get location business hours
-    async function getLocationBusinessHours(locationName) {
-      console.log(`🕐 Loading business hours for ${locationName}...`);
-      
-      try {
-        const locationData = LOCATIONS_DATA[locationName];
-        const locationId = locationData.locationId.indexOf('urn:blvd:Location:') === 0 ? 
-          locationData.locationId : 'urn:blvd:Location:' + locationData.locationId;
-        
-        const query = `
-          query GetLocation($id: ID!) {
-            location(id: $id) {
-              id
-              name
-              tz
-              businessHours {
-                day
-                startTime
-                endTime
-                isClosed
-              }
-            }
-          }
-        `;
-        
-        const data = await makeBoulevardAdminRequest(query, { id: locationId });
-        
-        if (data.location && data.location.businessHours) {
-          console.log(`✅ Loaded business hours for ${locationName}`);
-          return {
-            name: data.location.name,
-            timezone: data.location.tz,
-            businessHours: data.location.businessHours
-          };
-        }
-        
-      } catch (error) {
-        console.error(`❌ Failed to load business hours for ${locationName}:`, error);
-      }
-      
-      // Fallback to default business hours
-      return {
-        name: locationName,
-        timezone: 'America/New_York',
-        businessHours: [
-          { day: 1, startTime: '11:30:00', endTime: '19:00:00', isClosed: false }, // Monday
-          { day: 2, startTime: '11:30:00', endTime: '19:00:00', isClosed: false }, // Tuesday
-          { day: 3, startTime: '11:30:00', endTime: '19:00:00', isClosed: false }, // Wednesday
-          { day: 4, startTime: '11:30:00', endTime: '19:00:00', isClosed: false }, // Thursday
-          { day: 5, startTime: '11:00:00', endTime: '17:00:00', isClosed: false }, // Friday
-          { day: 6, startTime: '11:30:00', endTime: '16:00:00', isClosed: false }, // Saturday
-          { day: 0, startTime: null, endTime: null, isClosed: true } // Sunday
-        ]
-      };
-    }
-    
-    // Generate 40-minute time slots for business hours
-    function generateTimeSlots(businessHours, dayOfWeek) {
-      const dayHours = businessHours.find(bh => bh.day === dayOfWeek);
-      
-      if (!dayHours || dayHours.isClosed || !dayHours.startTime || !dayHours.endTime) {
-        return [];
-      }
-      
-      const slots = [];
-      const [startHour, startMinute] = dayHours.startTime.split(':').map(Number);
-      const [endHour, endMinute] = dayHours.endTime.split(':').map(Number);
-      
-      const startTime = startHour * 60 + startMinute; // minutes from midnight
-      const endTime = endHour * 60 + endMinute;
-      const slotDuration = 40; // 40-minute appointments
-      
-      for (let time = startTime; time < endTime; time += slotDuration) {
-        const hour = Math.floor(time / 60);
-        const minute = time % 60;
-        
-        slots.push({
-          time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
-          timeMinutes: time,
-          hour24: hour,
-          minute: minute,
-          display: formatTimeDisplay(hour, minute)
-        });
-      }
-      
-      return slots;
-    }
-    
-    // Format time for display
-    function formatTimeDisplay(hour, minute) {
-      const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-      const ampm = hour >= 12 ? 'PM' : 'AM';
-      const minuteStr = minute.toString().padStart(2, '0');
-      return `${hour12}:${minuteStr}${ampm}`;
-    }
-    
-    // Calculate available slots for a staff member
-    function calculateStaffAvailability(staff, timeSlots, shift, appointments) {
-      const staffSlots = [];
-      
-      timeSlots.forEach(slot => {
-        let status = 'off-shift';
-        let details = null;
-        
-        // Check if staff is working during this time
-        if (shift && shift.available) {
-          const clockIn = shift.clockIn ? parseTime(shift.clockIn) : 0;
-          const clockOut = shift.clockOut ? parseTime(shift.clockOut) : 24 * 60;
-          const slotTime = slot.timeMinutes;
-          
-          if (slotTime >= clockIn && slotTime < clockOut) {
-            status = 'available';
-            
-            // Check if there's an appointment at this time
-            const appointment = appointments.find(apt => {
-              const aptStart = new Date(apt.startAt);
-              const aptHour = aptStart.getHours();
-              const aptMinute = aptStart.getMinutes();
-              
-              // Check if appointment involves this staff member
-              const hasStaff = apt.staff && apt.staff.id === staff.id ||
-                apt.appointmentServices.some(service => 
-                  service.staff && service.staff.id === staff.id
-                );
-              
-              return hasStaff && aptHour === slot.hour24 && aptMinute === slot.minute;
-            });
-            
-            if (appointment) {
-              status = 'booked';
-              const service = appointment.appointmentServices.find(s => 
-                s.staff && s.staff.id === staff.id
-              );
-              details = {
-                client: appointment.client ? 
-                  `${appointment.client.firstName} ${appointment.client.lastName}` : 'Client',
-                service: service && service.service ? service.service.name : 'Appointment',
-                duration: service ? service.duration : 40
-              };
-            }
+          locations {
+            id
+            name
           }
         }
-        
-        staffSlots.push({
-          ...slot,
-          status: status,
-          details: details
-        });
-      });
-      
-      return staffSlots;
-    }
-    
-    // Parse time string to minutes from midnight
-    function parseTime(timeStr) {
-      const [hours, minutes] = timeStr.split(':').map(Number);
-      return hours * 60 + minutes;
-    }
-    
-    // Load complete dashboard data for a date
-    async function loadDashboardData() {
-      const dashboardBody = document.getElementById('dashboardBody');
-      dashboardBody.innerHTML = '<div class="loading-state">Loading appointment data...</div>';
-      
-      try {
-        const locationNames = selectedLocation === 'all' ? 
-          Object.keys(LOCATIONS_DATA) : [selectedLocation];
-        
-        console.log(`🔄 Loading data for ${locationNames.length} locations on ${currentDate.toISOString().split('T')[0]}`);
-        
-        const locationPromises = locationNames.map(async locationName => {
-          console.log(`📍 Processing ${locationName}...`);
-          
-          // Load all data in parallel
-          const [businessHours, shifts, appointments] = await Promise.all([
-            getLocationBusinessHours(locationName),
-            getStaffShifts(locationName, currentDate),
-            getAppointments(locationName, currentDate)
-          ]);
-          
-          // Generate time slots for this day
-          const dayOfWeek = currentDate.getDay();
-          const timeSlots = generateTimeSlots(businessHours.businessHours, dayOfWeek);
-          
-          // Get staff working at this location
-          const locationStaff = allStaff.filter(staff => 
-            staff.locationNames.includes(locationName)
-          );
-          
-          // Calculate availability for each staff member
-          const staffAvailability = locationStaff.map(staff => {
-            const staffShift = shifts.find(shift => shift.staffId === staff.id || 
-              (shift.staff && shift.staff.id === staff.id));
-            const staffAppointments = appointments.filter(apt => 
-              apt.staff && apt.staff.id === staff.id ||
-              apt.appointmentServices.some(service => 
-                service.staff && service.staff.id === staff.id
-              )
-            );
-            
-            const availability = calculateStaffAvailability(staff, timeSlots, staffShift, staffAppointments);
-            
-            return {
-              staff: staff,
-              shift: staffShift,
-              availability: availability
-            };
-          });
-          
-          return {
-            locationName: locationName,
-            businessHours: businessHours,
-            timeSlots: timeSlots,
-            staffAvailability: staffAvailability,
-            totalAppointments: appointments.length,
-            totalStaff: locationStaff.length
-          };
-        });
-        
-        const locationData = await Promise.all(locationPromises);
-        renderDashboard(locationData);
-        
-      } catch (error) {
-        console.error('❌ Failed to load dashboard data:', error);
-        dashboardBody.innerHTML = `
-          <div class="error-state">
-            <div>Failed to load appointment data</div>
-            <div style="font-size: 14px; margin-top: 8px; color: #666;">${error.message}</div>
-            <button class="refresh-button" onclick="loadDashboardData()">Retry</button>
-          </div>
-        `;
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
+  }
+`;
+
+async function fetchAllStaff() {
+  console.log('🔍 Fetching all real staff...');
+  
+  try {
+    const data = await queryBoulevard(STAFF_QUERY, { first: 100 });
     
-    // Render the complete dashboard
-    function renderDashboard(locationData) {
-      const dashboardBody = document.getElementById('dashboardBody');
-      dashboardBody.innerHTML = '';
-      
-      locationData.forEach(location => {
-        const panel = createLocationPanel(location);
-        dashboardBody.appendChild(panel);
-      });
+    if (!data.staff || !data.staff.edges) {
+      console.log('⚠️ No staff data returned');
+      return [];
     }
     
-    // Create location panel with calculated availability
-    function createLocationPanel(locationData) {
-      const panel = document.createElement('div');
-      panel.className = 'location-panel';
-      
-      if (locationData.timeSlots.length === 0) {
-        panel.innerHTML = `
-          <div class="location-header">
-            <div class="location-name">${locationData.locationName}</div>
-            <div class="location-stats">
-              <span>Closed</span>
-            </div>
-          </div>
-          <div style="text-align: center; color: #666; padding: 40px;">
-            Closed on this day
-          </div>
-        `;
-        return panel;
-      }
-      
-      // Calculate stats
-      const totalSlots = locationData.staffAvailability.reduce((sum, staff) => 
-        sum + staff.availability.filter(slot => slot.status !== 'off-shift').length, 0
-      );
-      const bookedSlots = locationData.staffAvailability.reduce((sum, staff) => 
-        sum + staff.availability.filter(slot => slot.status === 'booked').length, 0
-      );
-      const availableSlots = totalSlots - bookedSlots;
-      
-      // Business hours display
-      const businessHour = locationData.businessHours.businessHours.find(bh => 
-        bh.day === currentDate.getDay()
-      );
-      const hoursText = businessHour && !businessHour.isClosed ? 
-        `${businessHour.startTime.substring(0, 5)} - ${businessHour.endTime.substring(0, 5)}` : 
-        'Closed';
-      
-      // Header
-      const header = document.createElement('div');
-      header.className = 'location-header';
-      header.innerHTML = `
-        <div>
-          <div class="location-name">${locationData.locationName}</div>
-          <div class="business-hours">Hours: ${hoursText}</div>
-        </div>
-        <div class="location-stats">
-          <div class="stat-item">
-            <div class="status-dot available"></div>
-            <span>${availableSlots} available</span>
-          </div>
-          <div class="stat-item">
-            <div class="status-dot booked"></div>
-            <span>${bookedSlots} booked</span>
-          </div>
-          <div class="stat-item">
-            <span>${locationData.totalStaff} staff</span>
-          </div>
-        </div>
-      `;
-      
-      panel.appendChild(header);
-      
-      // Staff sections
-      if (locationData.staffAvailability.length === 0) {
-        const noStaffDiv = document.createElement('div');
-        noStaffDiv.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">No staff scheduled</div>';
-        panel.appendChild(noStaffDiv);
-      } else {
-        locationData.staffAvailability.forEach(staffData => {
-          // Filter by selected staff if needed
-          if (selectedStaff !== 'all' && staffData.staff.id !== selectedStaff) {
-            return;
-          }
-          
-          const staffSection = createStaffSection(staffData);
-          panel.appendChild(staffSection);
-        });
-      }
-      
-      return panel;
-    }
+    const staff = data.staff.edges
+      .map(edge => edge.node)
+      .filter(staff => staff.active); // Only active staff
     
-    // Create staff section with availability
-    function createStaffSection(staffData) {
-      const section = document.createElement('div');
-      section.className = 'staff-section';
-      
-      // Staff header
-      const header = document.createElement('div');
-      header.className = 'staff-header';
-      
-      const avatar = document.createElement('div');
-      avatar.className = 'staff-avatar';
-      avatar.textContent = staffData.staff.firstName.charAt(0) + staffData.staff.lastName.charAt(0);
-      
-      const staffInfo = document.createElement('div');
-      staffInfo.className = 'staff-info';
-      
-      const staffName = document.createElement('div');
-      staffName.className = 'staff-name';
-      staffName.textContent = staffData.staff.displayName;
-      
-      const staffShift = document.createElement('div');
-      staffShift.className = 'staff-shift';
-      if (staffData.shift) {
-        const clockIn = staffData.shift.clockIn || '00:00:00';
-        const clockOut = staffData.shift.clockOut || '23:59:59';
-        staffShift.textContent = `Shift: ${clockIn.substring(0, 5)} - ${clockOut.substring(0, 5)}`;
-      } else {
-        staffShift.textContent = 'No shift scheduled';
-      }
-      
-      staffInfo.appendChild(staffName);
-      staffInfo.appendChild(staffShift);
-      
-      header.appendChild(avatar);
-      header.appendChild(staffInfo);
-      
-      // Time slots grid
-      const slotsGrid = document.createElement('div');
-      slotsGrid.className = 'time-slots';
-      
-      staffData.availability.forEach(slot => {
-        const slotElement = document.createElement('div');
-        slotElement.className = `time-slot ${slot.status}`;
-        slotElement.textContent = slot.display;
-        
-        // Add tooltip for booked appointments
-        if (slot.status === 'booked' && slot.details) {
-          const tooltip = document.createElement('div');
-          tooltip.className = 'appointment-tooltip';
-          tooltip.textContent = `${slot.details.service} - ${slot.details.client}`;
-          slotElement.appendChild(tooltip);
-        }
-        
-        slotsGrid.appendChild(slotElement);
-      });
-      
-      section.appendChild(header);
-      section.appendChild(slotsGrid);
-      
-      return section;
-    }
-    
-    // Populate filter dropdowns
-    function populateStaffFilter() {
-      const dropdown = document.getElementById('staffDropdown');
-      dropdown.innerHTML = '<div class="dropdown-item" data-staff="all">All Staff</div>';
-      
-      allStaff.forEach(staff => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item';
-        item.setAttribute('data-staff', staff.id);
-        item.textContent = `${staff.displayName} (${staff.locationNames.join(', ')})`;
-        dropdown.appendChild(item);
-      });
-    }
-    
-    function populateLocationFilter() {
-      const dropdown = document.getElementById('locationDropdown');
-      dropdown.innerHTML = '<div class="dropdown-item" data-location="all">All Locations</div>';
-      
-      Object.keys(LOCATIONS_DATA).forEach(locationName => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item';
-        item.setAttribute('data-location', locationName);
-        item.textContent = locationName;
-        dropdown.appendChild(item);
-      });
-    }
-    
-    // Update current date display
-    function updateDateDisplay() {
-      const dateElement = document.getElementById('currentDate');
-      const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      };
-      dateElement.textContent = currentDate.toLocaleDateString('en-US', options);
-    }
-    
-    // Event Listeners
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('🚀 Dashboard initializing...');
-      
-      // Initialize
-      updateDateDisplay();
-      populateLocationFilter();
-      
-      // Load data
-      loadAllStaff().then(() => {
-        loadDashboardData();
-      });
-      
-      // Date navigation
-      document.getElementById('prevDay').addEventListener('click', () => {
-        currentDate.setDate(currentDate.getDate() - 1);
-        updateDateDisplay();
-        loadDashboardData();
-      });
-      
-      document.getElementById('nextDay').addEventListener('click', () => {
-        currentDate.setDate(currentDate.getDate() + 1);
-        updateDateDisplay();
-        loadDashboardData();
-      });
-      
-      // Location filter
-      document.getElementById('locationFilter').addEventListener('click', () => {
-        const dropdown = document.getElementById('locationDropdown');
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-      });
-      
-      document.getElementById('locationDropdown').addEventListener('click', (e) => {
-        if (e.target.classList.contains('dropdown-item')) {
-          selectedLocation = e.target.getAttribute('data-location');
-          document.getElementById('locationFilter').textContent = e.target.textContent + ' ▼';
-          document.getElementById('locationDropdown').style.display = 'none';
-          loadDashboardData();
-        }
-      });
-      
-      // Staff filter
-      document.getElementById('staffFilter').addEventListener('click', () => {
-        const dropdown = document.getElementById('staffDropdown');
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-      });
-      
-      document.getElementById('staffDropdown').addEventListener('click', (e) => {
-        if (e.target.classList.contains('dropdown-item')) {
-          selectedStaff = e.target.getAttribute('data-staff');
-          document.getElementById('staffFilter').textContent = e.target.textContent + ' ▼';
-          document.getElementById('staffDropdown').style.display = 'none';
-          loadDashboardData();
-        }
-      });
-      
-      // Refresh button
-      document.getElementById('refreshData').addEventListener('click', () => {
-        loadDashboardData();
-      });
-      
-      // Close dropdowns when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.filter-dropdown')) {
-          document.querySelectorAll('.dropdown-content').forEach(dropdown => {
-            dropdown.style.display = 'none';
-          });
-        }
-      });
+    console.log(`✅ Found ${staff.length} active staff members`);
+    staff.forEach(s => {
+      console.log(`  - ${s.firstName} ${s.lastName} (${s.role?.name || 'No role'}) - Locations: ${s.locations.map(l => l.name).join(', ')}`);
     });
     
-    console.log('✅ Global Appointment Dashboard loaded with proper Admin API implementation');
-  </script>
-</body>
-</html>
+    return staff;
+    
+  } catch (error) {
+    console.error('❌ Failed to fetch staff:', error);
+    return [];
+  }
+}
+
+// =============================================================================
+// 2. FETCH ALL LOCATIONS WITH BUSINESS HOURS
+// =============================================================================
+
+const LOCATIONS_QUERY = `
+  query GetAllLocations($first: Int!) {
+    locations(first: $first) {
+      edges {
+        node {
+          id
+          name
+          businessName
+          tz
+          businessHours {
+            day
+            startTime
+            endTime
+            isClosed
+          }
+          isActive
+        }
+      }
+    }
+  }
+`;
+
+async function fetchAllLocations() {
+  console.log('🏢 Fetching all locations...');
+  
+  try {
+    const data = await queryBoulevard(LOCATIONS_QUERY, { first: 50 });
+    
+    if (!data.locations || !data.locations.edges) {
+      console.log('⚠️ No locations data returned');
+      return [];
+    }
+    
+    const locations = data.locations.edges
+      .map(edge => edge.node)
+      .filter(location => location.isActive);
+    
+    console.log(`✅ Found ${locations.length} active locations`);
+    locations.forEach(l => {
+      console.log(`  - ${l.name} (${l.businessName})`);
+    });
+    
+    return locations;
+    
+  } catch (error) {
+    console.error('❌ Failed to fetch locations:', error);
+    return [];
+  }
+}
+
+// =============================================================================
+// 3. FETCH SHIFTS FOR LOCATION AND DATE
+// =============================================================================
+
+const SHIFTS_QUERY = `
+  query GetLocationShifts($locationId: ID!, $startIso8601: DateTime!, $endIso8601: DateTime!, $first: Int!) {
+    shifts(
+      locationId: $locationId,
+      startIso8601: $startIso8601,
+      endIso8601: $endIso8601,
+      first: $first
+    ) {
+      edges {
+        node {
+          id
+          staffId
+          locationId
+          date
+          startTime
+          endTime
+          available
+          staff {
+            id
+            firstName
+            lastName
+          }
+          location {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+async function fetchShifts(locationId, date) {
+  console.log(`📅 Fetching shifts for location ${locationId} on ${date.toISOString().split('T')[0]}...`);
+  
+  try {
+    // Create start and end of day in ISO format
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    const data = await queryBoulevard(SHIFTS_QUERY, {
+      locationId: locationId,
+      startIso8601: startOfDay.toISOString(),
+      endIso8601: endOfDay.toISOString(),
+      first: 100
+    });
+    
+    if (!data.shifts || !data.shifts.edges) {
+      console.log(`⚠️ No shifts found for location ${locationId}`);
+      return [];
+    }
+    
+    const shifts = data.shifts.edges.map(edge => edge.node);
+    
+    console.log(`✅ Found ${shifts.length} shifts for location`);
+    shifts.forEach(shift => {
+      const staffName = shift.staff ? `${shift.staff.firstName} ${shift.staff.lastName}` : 'Unknown Staff';
+      console.log(`  - ${staffName}: ${shift.startTime} - ${shift.endTime} (Available: ${shift.available})`);
+    });
+    
+    return shifts;
+    
+  } catch (error) {
+    console.error(`❌ Failed to fetch shifts for location ${locationId}:`, error);
+    return [];
+  }
+}
+
+// =============================================================================
+// 4. FETCH APPOINTMENTS FOR LOCATION AND DATE
+// =============================================================================
+
+const APPOINTMENTS_QUERY = `
+  query GetLocationAppointments($locationId: ID!, $after: DateTime!, $before: DateTime!, $first: Int!) {
+    appointments(
+      locationId: $locationId,
+      after: $after,
+      before: $before,
+      first: $first
+    ) {
+      edges {
+        node {
+          id
+          startAt
+          endAt
+          state
+          cancelled
+          client {
+            id
+            firstName
+            lastName
+          }
+          staff {
+            id
+            firstName
+            lastName
+          }
+          location {
+            id
+            name
+          }
+          appointmentServices {
+            id
+            startAt
+            endAt
+            duration
+            service {
+              name
+              category {
+                name
+              }
+            }
+            staff {
+              id
+              firstName
+              lastName
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+async function fetchAppointments(locationId, date) {
+  console.log(`📋 Fetching appointments for location ${locationId} on ${date.toISOString().split('T')[0]}...`);
+  
+  try {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    const data = await queryBoulevard(APPOINTMENTS_QUERY, {
+      locationId: locationId,
+      after: startOfDay.toISOString(),
+      before: endOfDay.toISOString(),
+      first: 100
+    });
+    
+    if (!data.appointments || !data.appointments.edges) {
+      console.log(`⚠️ No appointments found for location ${locationId}`);
+      return [];
+    }
+    
+    const appointments = data.appointments.edges
+      .map(edge => edge.node)
+      .filter(apt => !apt.cancelled); // Filter out cancelled appointments
+    
+    console.log(`✅ Found ${appointments.length} active appointments`);
+    appointments.forEach(apt => {
+      const clientName = apt.client ? `${apt.client.firstName} ${apt.client.lastName}` : 'No Client';
+      const staffName = apt.staff ? `${apt.staff.firstName} ${apt.staff.lastName}` : 'No Staff';
+      const startTime = new Date(apt.startAt).toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+      });
+      console.log(`  - ${startTime}: ${clientName} with ${staffName}`);
+    });
+    
+    return appointments;
+    
+  } catch (error) {
+    console.error(`❌ Failed to fetch appointments for location ${locationId}:`, error);
+    return [];
+  }
+}
+
+// =============================================================================
+// 5. COMPLETE DASHBOARD DATA LOADING
+// =============================================================================
+
+async function loadDashboardData(selectedDate) {
+  console.log(`🔄 Loading complete dashboard data for ${selectedDate.toISOString().split('T')[0]}...`);
+  
+  try {
+    // Step 1: Load all staff and locations
+    const [allStaff, allLocations] = await Promise.all([
+      fetchAllStaff(),
+      fetchAllLocations()
+    ]);
+    
+    if (allStaff.length === 0) {
+      console.error('❌ No staff found - check your Boulevard account setup');
+      return { error: 'No staff found in Boulevard account' };
+    }
+    
+    if (allLocations.length === 0) {
+      console.error('❌ No locations found - check your Boulevard account setup');
+      return { error: 'No locations found in Boulevard account' };
+    }
+    
+    // Step 2: For each location, load shifts and appointments
+    const locationData = await Promise.all(
+      allLocations.map(async location => {
+        console.log(`🏢 Processing location: ${location.name}...`);
+        
+        const [shifts, appointments] = await Promise.all([
+          fetchShifts(location.id, selectedDate),
+          fetchAppointments(location.id, selectedDate)
+        ]);
+        
+        // Step 3: Find staff working at this location
+        const locationStaff = allStaff.filter(staff => 
+          staff.locations.some(loc => loc.id === location.id)
+        );
+        
+        // Step 4: Map shifts to staff
+        const staffWithShifts = locationStaff.map(staff => {
+          const staffShift = shifts.find(shift => shift.staffId === staff.id);
+          return {
+            ...staff,
+            shift: staffShift || null,
+            isWorking: !!staffShift && staffShift.available
+          };
+        });
+        
+        console.log(`✅ ${location.name}: ${staffWithShifts.length} staff, ${shifts.length} shifts, ${appointments.length} appointments`);
+        
+        return {
+          location: location,
+          staff: staffWithShifts,
+          shifts: shifts,
+          appointments: appointments
+        };
+      })
+    );
+    
+    console.log('✅ Dashboard data loaded successfully');
+    
+    return {
+      allStaff: allStaff,
+      allLocations: allLocations,
+      locationData: locationData
+    };
+    
+  } catch (error) {
+    console.error('❌ Failed to load dashboard data:', error);
+    return { error: error.message };
+  }
+}
+
+// =============================================================================
+// 6. RENDER DASHBOARD WITH REAL DATA
+// =============================================================================
+
+function renderDashboard(dashboardData) {
+  const container = document.getElementById('dashboard-container');
+  
+  if (dashboardData.error) {
+    container.innerHTML = `
+      <div class="error-state">
+        <h3>Error Loading Data</h3>
+        <p>${dashboardData.error}</p>
+        <button onclick="loadAndRenderDashboard()">Retry</button>
+      </div>
+    `;
+    return;
+  }
+  
+  if (!dashboardData.locationData || dashboardData.locationData.length === 0) {
+    container.innerHTML = `
+      <div class="no-data-state">
+        <h3>No Data Found</h3>
+        <p>No locations or staff found in your Boulevard account.</p>
+        <p>Please check your Boulevard setup and try again.</p>
+        <button onclick="loadAndRenderDashboard()">Retry</button>
+      </div>
+    `;
+    return;
+  }
+  
+  // Clear container
+  container.innerHTML = '';
+  
+  // Render each location
+  dashboardData.locationData.forEach(locationInfo => {
+    const locationPanel = createLocationPanel(locationInfo);
+    container.appendChild(locationPanel);
+  });
+}
+
+function createLocationPanel(locationInfo) {
+  const panel = document.createElement('div');
+  panel.className = 'location-panel';
+  
+  // Location header
+  const header = document.createElement('div');
+  header.className = 'location-header';
+  header.innerHTML = `
+    <h3>${locationInfo.location.name}</h3>
+    <div class="location-stats">
+      <span>${locationInfo.staff.length} staff</span>
+      <span>${locationInfo.shifts.length} shifts</span>
+      <span>${locationInfo.appointments.length} appointments</span>
+    </div>
+  `;
+  panel.appendChild(header);
+  
+  // Staff list
+  if (locationInfo.staff.length === 0) {
+    const noStaff = document.createElement('div');
+    noStaff.className = 'no-staff';
+    noStaff.textContent = 'No staff assigned to this location';
+    panel.appendChild(noStaff);
+  } else {
+    locationInfo.staff.forEach(staff => {
+      const staffSection = createStaffSection(staff, locationInfo.appointments);
+      panel.appendChild(staffSection);
+    });
+  }
+  
+  return panel;
+}
+
+function createStaffSection(staff, appointments) {
+  const section = document.createElement('div');
+  section.className = 'staff-section';
+  
+  const shiftInfo = staff.shift ? 
+    `${staff.shift.startTime} - ${staff.shift.endTime}` : 
+    'Not scheduled';
+    
+  const workingStatus = staff.isWorking ? 'working' : 'not-working';
+  
+  section.innerHTML = `
+    <div class="staff-header ${workingStatus}">
+      <div class="staff-name">${staff.firstName} ${staff.lastName}</div>
+      <div class="staff-role">${staff.role?.name || 'No role'}</div>
+      <div class="staff-shift">${shiftInfo}</div>
+    </div>
+  `;
+  
+  // Add appointment details if staff is working
+  if (staff.isWorking) {
+    const staffAppointments = appointments.filter(apt => 
+      apt.staff && apt.staff.id === staff.id
+    );
+    
+    if (staffAppointments.length > 0) {
+      const appointmentsList = document.createElement('div');
+      appointmentsList.className = 'appointments-list';
+      
+      staffAppointments.forEach(apt => {
+        const startTime = new Date(apt.startAt).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+        
+        const clientName = apt.client ? 
+          `${apt.client.firstName} ${apt.client.lastName}` : 
+          'Client';
+          
+        appointmentsList.innerHTML += `
+          <div class="appointment-item">
+            ${startTime} - ${clientName}
+          </div>
+        `;
+      });
+      
+      section.appendChild(appointmentsList);
+    }
+  }
+  
+  return section;
+}
+
+// =============================================================================
+// 7. MAIN INITIALIZATION FUNCTION
+// =============================================================================
+
+async function loadAndRenderDashboard() {
+  console.log('🚀 Initializing Boulevard Dashboard...');
+  
+  // Show loading state
+  const container = document.getElementById('dashboard-container');
+  container.innerHTML = '<div class="loading-state">Loading real Boulevard data...</div>';
+  
+  // Get current date (or selected date)
+  const selectedDate = new Date(); // You can change this to any date
+  
+  // Load and render data
+  const dashboardData = await loadDashboardData(selectedDate);
+  renderDashboard(dashboardData);
+}
+
+// =============================================================================
+// 8. INITIALIZE ON PAGE LOAD
+// =============================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('📱 Page loaded, starting Boulevard dashboard...');
+  loadAndRenderDashboard();
+});
+
+// Export functions for manual testing
+window.boulevardAPI = {
+  fetchAllStaff,
+  fetchAllLocations,
+  fetchShifts,
+  fetchAppointments,
+  loadDashboardData,
+  loadAndRenderDashboard
+};
