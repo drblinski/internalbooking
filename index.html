@@ -297,6 +297,17 @@
       font-style: italic;
     }
     
+    .availability-cell.not-bookable {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      color: #6c757d;
+      font-style: italic;
+    }
+    
+    .availability-cell.not-bookable:hover {
+      background: #e9ecef;
+    }
+    
     .availability-cell.error {
       background: #ffebee;
       color: #c62828;
@@ -471,13 +482,13 @@
         </div>
         
         <!-- Service Filter -->
-        <div class="control-group">
+        <!-- <div class="control-group">
           <label class="control-label">Service</label>
           <select class="control-select" id="service-filter">
             <option value="all">All Services</option>
             <option value="injectables">Injectables Only</option>
           </select>
-        </div>
+        </div> -->
         
         <!-- Date Range -->
         <div class="control-group">
@@ -1169,7 +1180,7 @@
         // Get parameters
         const currentView = globalState.currentView;
         const dateRange = generateDateRange(globalState.selectedDateRange);
-        const serviceFilter = document.getElementById('service-filter').value;
+        const serviceFilter = 'all'; // Default to all services since filter is removed
         const selectedPrimary = document.getElementById('primary-filter').value;
         
         if (!selectedPrimary) {
@@ -1266,17 +1277,31 @@
      */
     function updateCellDisplay(cellId, availability) {
       const cellElement = document.getElementById(cellId);
-      if (!cellElement) return;
+      if (!cellElement) {
+        console.warn(`Cell element not found: ${cellId}`);
+        return;
+      }
       
       cellElement.className = 'availability-cell';
       
-      if (availability.error) {
+      if (availability.notBookable) {
+        // Show "Not Bookable" for cases where injector can't perform service at location
+        cellElement.className += ' not-bookable';
+        cellElement.innerHTML = `
+          <div style="font-size: 11px; color: #999; font-style: italic;">Not Bookable</div>
+          <div style="font-size: 9px; color: #999;" title="${availability.reason || availability.error}">
+            ${availability.reason ? 'Service unavailable' : 'Error'}
+          </div>
+        `;
+      } else if (availability.error) {
+        // Show actual errors (API failures, etc.)
         cellElement.className += ' error';
         cellElement.innerHTML = `
           <div style="font-size: 10px;">Error</div>
-          <div style="font-size: 9px;">${availability.error}</div>
+          <div style="font-size: 9px;" title="${availability.error}">${availability.error.substring(0, 20)}...</div>
         `;
       } else if (availability.available) {
+        // Show available times
         cellElement.className += ' available';
         const formattedTime = formatTimeDisplay(availability.earliestTime);
         cellElement.innerHTML = `
@@ -1286,6 +1311,7 @@
           <button class="copy-btn" onclick="copySlotInfo('${cellId}')">Copy</button>
         `;
       } else {
+        // Show no availability
         cellElement.className += ' no-availability';
         cellElement.innerHTML = `
           <div style="font-size: 12px; color: #999;">—</div>
@@ -1422,7 +1448,8 @@
     }
 
     function populateServiceFilter() {
-      const serviceFilter = document.getElementById('service-filter');
+      // Service filter removed - no longer needed
+      // const serviceFilter = document.getElementById('service-filter');
       // Keep the default options for now - could be expanded to show actual services
       // if needed for more granular filtering
     }
@@ -1495,12 +1522,11 @@
         globalState.availabilityCache.clear();
       });
       
-      // Service filter change
-      document.getElementById('service-filter').addEventListener('change', () => {
-        // Clear cache when service filter changes
-        globalState.availabilityCache.clear();
-        updateStatus('Service filter changed. Click refresh to reload with new filter.', 'success');
-      });
+      // Service filter change - REMOVED since service filter is no longer used
+      // document.getElementById('service-filter').addEventListener('change', () => {
+      //   globalState.availabilityCache.clear();
+      //   updateStatus('Service filter changed. Click refresh to reload with new filter.', 'success');
+      // });
     });
 
     // Export functions for debugging and testing
