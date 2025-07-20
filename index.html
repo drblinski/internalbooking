@@ -308,6 +308,37 @@
       background: #e9ecef;
     }
     
+    .info-icon {
+      display: inline-block;
+      font-size: 12px;
+      cursor: help;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      margin-top: 2px;
+    }
+    
+    .info-icon:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    
+    /* Tooltip styles for info icons */
+    .info-icon[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      background: #333;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      white-space: pre-line;
+      z-index: 1000;
+      max-width: 200px;
+      margin-top: 20px;
+      margin-left: -50px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
     .availability-cell.error {
       background: #ffebee;
       color: #c62828;
@@ -1273,7 +1304,7 @@
     }
 
     /**
-     * Update individual cell display with availability data
+     * Update individual cell display with availability data and informative messages
      */
     function updateCellDisplay(cellId, availability) {
       const cellElement = document.getElementById(cellId);
@@ -1284,24 +1315,55 @@
       
       cellElement.className = 'availability-cell';
       
+      // Create tooltip content for info icon
+      let tooltipContent = '';
+      if (availability.availableServices && availability.availableServices.length > 0) {
+        tooltipContent = `Available services at this location:\n• ${availability.availableServices.join('\n• ')}`;
+      }
+      
       if (availability.notBookable) {
-        // Show "Not Bookable" for cases where injector can't perform service at location
+        // Different messages based on the specific reason
+        let displayMessage = availability.message || 'Not Available';
+        let detailMessage = '';
+        let showInfoIcon = false;
+        
+        switch (availability.reason) {
+          case 'not-bookable-location':
+            displayMessage = 'Not Bookable at this Location';
+            detailMessage = 'No services available';
+            break;
+          case 'no-matching-service':
+            displayMessage = 'No Matching Service';
+            detailMessage = 'See available services';
+            showInfoIcon = true;
+            break;
+          case 'no-injector-data':
+            displayMessage = 'Injector Not Found';
+            detailMessage = 'Data error';
+            break;
+          default:
+            displayMessage = availability.message || 'Not Available';
+            detailMessage = 'See details';
+            if (availability.availableServices && availability.availableServices.length > 0) {
+              showInfoIcon = true;
+            }
+        }
+        
         cellElement.className += ' not-bookable';
         cellElement.innerHTML = `
-          <div style="font-size: 11px; color: #999; font-style: italic;">Not Bookable</div>
-          <div style="font-size: 9px; color: #999;" title="${availability.reason || availability.error}">
-            ${availability.reason ? 'Service unavailable' : 'Error'}
-          </div>
+          <div style="font-size: 11px; color: #666; font-weight: 600; margin-bottom: 2px;">${displayMessage}</div>
+          <div style="font-size: 9px; color: #999; margin-bottom: 4px;">${detailMessage}</div>
+          ${showInfoIcon ? `<div class="info-icon" title="${tooltipContent}">ℹ️</div>` : ''}
         `;
       } else if (availability.error) {
         // Show actual errors (API failures, etc.)
         cellElement.className += ' error';
         cellElement.innerHTML = `
-          <div style="font-size: 10px;">Error</div>
-          <div style="font-size: 9px;" title="${availability.error}">${availability.error.substring(0, 20)}...</div>
+          <div style="font-size: 10px; color: #c62828; font-weight: 600;">Error</div>
+          <div style="font-size: 9px; color: #999;" title="${availability.error}">${availability.error.substring(0, 15)}...</div>
         `;
       } else if (availability.available) {
-        // Show available times
+        // Show available times with booking options
         cellElement.className += ' available';
         const formattedTime = formatTimeDisplay(availability.earliestTime);
         cellElement.innerHTML = `
@@ -1311,11 +1373,13 @@
           <button class="copy-btn" onclick="copySlotInfo('${cellId}')">Copy</button>
         `;
       } else {
-        // Show no availability
+        // Show no availability but service exists
         cellElement.className += ' no-availability';
+        const showInfoIcon = availability.availableServices && availability.availableServices.length > 0;
         cellElement.innerHTML = `
-          <div style="font-size: 12px; color: #999;">—</div>
-          <div style="font-size: 10px; color: #999;">No slots</div>
+          <div style="font-size: 11px; color: #666; font-weight: 600; margin-bottom: 2px;">No Slots</div>
+          <div style="font-size: 9px; color: #999; margin-bottom: 4px;">Try another date</div>
+          ${showInfoIcon ? `<div class="info-icon" title="${tooltipContent}">ℹ️</div>` : ''}
         `;
       }
     }
